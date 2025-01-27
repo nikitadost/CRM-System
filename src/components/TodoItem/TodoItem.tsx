@@ -1,5 +1,5 @@
-import { Todo } from "../TodoList/TodoList";
 import React, { useState } from "react";
+import { Todo } from "../../types";
 import BtnDelete from "../../UI/BtnDelete/BtnDelete";
 import InputIsDone from "../../UI/InputIsDone/InputIsDone";
 import BtnEdit from "../../UI/BtnEdit/BtnEdit";

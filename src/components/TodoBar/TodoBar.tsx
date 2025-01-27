@@ -1,13 +1,6 @@
-interface MetaResponse<T, N> {
-  data: T[];
-  info?: N;
-  meta: {
-    totalAmount: number;
-  };
-}
-
+import { Todo, TodoInfo, MetaResponse } from "../../types";
 interface ComponentProps {
-  todos: MetaResponse<T, N>;
+  todos: MetaResponse<Todo, TodoInfo>;
   setFilter: (filter: string) => void;
   currentFilter: string;
 }

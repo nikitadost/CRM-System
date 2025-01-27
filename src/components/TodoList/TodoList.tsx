@@ -3,36 +3,15 @@ import "./TodoList.css";
 import TodoHeader from "../TodoHeader/TodoHeader";
 import TodoBar from "../TodoBar/TodoBar";
 import TodoItem from "../TodoItem/TodoItem";
-
-// interface TodoRequest {
-//   title?: string;
-//   isDone?: boolean; // изменение статуса задачи происходит через этот флаг
-// }
-
-export interface TodoInfo {
-  all: number;
-  completed: number;
-  inWork: number;
-}
-
-export interface Todo {
-  id: number;
-  title: string;
-  created: string; // ISO date string
-  isDone: boolean;
-}
-
-interface MetaResponse<T, N> {
-  data: T[];
-  info?: N;
-  meta: {
-    totalAmount: number;
-  };
-}
+import { MetaResponse, Todo, TodoInfo } from "../../types";
 
 const TodoList = () => {
   const url = "https://easydev.club/api/v2";
-  const [todos, setTodos] = useState<MetaResponse<T, N>>({});
+  const [todos, setTodos] = useState<MetaResponse<Todo, TodoInfo>>({
+    data: [],
+    info: undefined,
+    meta: { totalAmount: 0 },
+  });
   const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
@@ -44,7 +23,7 @@ const TodoList = () => {
       method: "GET",
     })
       .then((response) => response.json())
-      .then((result: MetaResponse<T, N>) => {
+      .then((result: MetaResponse<Todo, TodoInfo>) => {
         setTodos(result);
         console.log(result);
       });
@@ -73,9 +52,9 @@ const TodoList = () => {
         setTodos((todos) => ({
           data: [...todos.data, result],
           info: {
-            all: todos.info?.all + 1 || 1,
+            all: (todos.info?.all || 0) + 1,
             completed: todos.info?.completed || 0,
-            inWork: todos.info?.inWork + 1 || 1,
+            inWork: (todos.info?.inWork || 0) + 1,
           },
           meta: todos.meta,
         }));
@@ -87,13 +66,13 @@ const TodoList = () => {
       setTodos((todos) => ({
         data: todos.data.filter((todo) => todo.id !== item.id),
         info: {
-          all: todos.info?.all - 1 || 0,
+          all: todos.info?.all || 0 - 1,
           completed: item.isDone
-            ? todos.info?.completed - 1 || 0
+            ? todos.info?.completed || 0 - 1
             : todos.info?.completed || 0,
           inWork: item.isDone
             ? todos.info?.inWork || 0
-            : todos.info?.inWork - 1 || 0,
+            : todos.info?.inWork || 0 - 1,
         },
         meta: todos.meta,
       }));
