@@ -33,6 +33,7 @@ interface MetaResponse<T, N> {
 const TodoList = () => {
   const url = "https://easydev.club/api/v2";
   const [todos, setTodos] = useState<MetaResponse<T, N>>({});
+  const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
     fetchTodos();
@@ -47,6 +48,19 @@ const TodoList = () => {
         setTodos(result);
         console.log(result);
       });
+  };
+
+  const filteredTodos = () => {
+    switch (filter) {
+      case "all":
+        return todos.data;
+      case "inWork":
+        return todos.data.filter((todo) => !todo.isDone);
+      case "completed":
+        return todos.data.filter((todo) => todo.isDone);
+      default:
+        return todos.data;
+    }
   };
 
   const fetchPost = (todo: string) => {
@@ -140,11 +154,11 @@ const TodoList = () => {
     <div className="todo-list">
       <TodoHeader fetchPost={fetchPost} />
       <div>
-        <TodoBar todos={todos} />
+        <TodoBar currentFilter={filter} todos={todos} setFilter={setFilter} />
         <ul className="todo-items">
           {todos &&
             todos.data &&
-            todos.data.map((item: Todo) => (
+            filteredTodos().map((item: Todo) => (
               <TodoItem
                 key={item.id}
                 item={item}

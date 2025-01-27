@@ -85,3 +85,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.title {
+  cursor: pointer;
+  padding: 10px;
+  transition: background-color 0.3s;
+}
+
+.selected {
+  background-color: #f0f0f0;
+  border-bottom: 2px solid #000;
+}
