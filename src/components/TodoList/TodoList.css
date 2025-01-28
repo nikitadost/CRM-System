@@ -70,10 +70,11 @@
   position: relative;
 }
 .error {
+  width: 300px;
   position: absolute;
-  top: 0px;
+  top: 2px;
   left: auto;
-  width: 100%;
+
   color: red;
 }
 
