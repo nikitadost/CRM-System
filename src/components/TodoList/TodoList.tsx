@@ -25,7 +25,6 @@ const TodoList = () => {
       .then((response) => response.json())
       .then((result: MetaResponse<Todo, TodoInfo>) => {
         setTodos(result);
-        console.log(result);
       });
   };
 
@@ -48,34 +47,14 @@ const TodoList = () => {
       body: JSON.stringify({ title: todo, isDone: false }),
     })
       .then((response) => response.json())
-      .then((result) => {
-        setTodos((todos) => ({
-          data: [...todos.data, result],
-          info: {
-            all: (todos.info?.all || 0) + 1,
-            completed: todos.info?.completed || 0,
-            inWork: (todos.info?.inWork || 0) + 1,
-          },
-          meta: todos.meta,
-        }));
+      .then(() => {
+        fetchTodos();
       });
   };
 
   const fetchDelete = (item: Todo) => {
     fetch(`${url}/todos/${item.id}`, { method: "DELETE" }).then(() => {
-      setTodos((todos) => ({
-        data: todos.data.filter((todo) => todo.id !== item.id),
-        info: {
-          all: todos.info?.all || 0 - 1,
-          completed: item.isDone
-            ? todos.info?.completed || 0 - 1
-            : todos.info?.completed || 0,
-          inWork: item.isDone
-            ? todos.info?.inWork || 0
-            : todos.info?.inWork || 0 - 1,
-        },
-        meta: todos.meta,
-      }));
+      fetchTodos();
     });
   };
 
@@ -90,25 +69,7 @@ const TodoList = () => {
     })
       .then((response) => response.json())
       .then(() => {
-        setTodos((todos) => {
-          const updatedData = todos.data.map((todo) =>
-            todo.id === item.id ? { ...todo, isDone: updatedIsDone } : todo
-          );
-          const completedCount = updatedData.filter(
-            (todo) => todo.isDone
-          ).length;
-          const inWorkCount = updatedData.length - completedCount;
-
-          return {
-            data: updatedData,
-            info: {
-              all: updatedData.length,
-              completed: completedCount,
-              inWork: inWorkCount,
-            },
-            meta: todos.meta,
-          };
-        });
+        fetchTodos();
       });
   };
 
@@ -119,21 +80,15 @@ const TodoList = () => {
     })
       .then((response) => response.json())
       .then(() => {
-        setTodos((todos) => ({
-          data: todos.data.map((todo) =>
-            todo.id === item.id ? { ...todo, title: newTitle } : todo
-          ),
-          info: todos.info,
-          meta: todos.meta,
-        }));
+        fetchTodos();
       });
   };
 
   return (
     <div className="todo-list">
       <TodoHeader fetchPost={fetchPost} />
-      <div>
-        <TodoBar currentFilter={filter} todos={todos} setFilter={setFilter} />
+      <TodoBar currentFilter={filter} todos={todos} setFilter={setFilter} />
+      <div className="todos-wrap">
         <ul className="todo-items">
           {todos &&
             todos.data &&
