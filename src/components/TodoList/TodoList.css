@@ -70,11 +70,10 @@
   position: relative;
 }
 .error {
-  width: 300px;
   position: absolute;
-  top: 2px;
+  top: 0px;
   left: auto;
-
+  width: 100%;
   color: red;
 }
 
@@ -103,6 +102,8 @@
 }
 .todo-item .error {
   font-size: smaller;
+  width: 300px;
+  top: 2px;
 }
 .delete-btn {
   border-radius: 4px;
