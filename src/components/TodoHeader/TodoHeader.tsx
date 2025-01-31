@@ -1,10 +1,15 @@
 import { useState } from "react";
+import { MetaResponse, Todo, TodoInfo } from "../../types";
 
 interface ComponentProps {
-  fetchPost: (title: string) => void;
+  fetchPost: (
+    title: string,
+    setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
+  ) => void;
+  setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>;
 }
 
-const TodoHeader: React.FC<ComponentProps> = ({ fetchPost }) => {
+const TodoHeader: React.FC<ComponentProps> = ({ fetchPost, setTodos }) => {
   const [todo, setTodo] = useState<string>("");
   const [error, setError] = useState<string>("");
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -16,7 +21,7 @@ const TodoHeader: React.FC<ComponentProps> = ({ fetchPost }) => {
       setError("Task title should be between 2 and 64 characters.");
       return;
     }
-    fetchPost(todo);
+    fetchPost(todo, setTodos);
     setTodo("");
     setError("");
   };

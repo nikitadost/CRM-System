@@ -4,9 +4,15 @@ import TodoHeader from "../TodoHeader/TodoHeader";
 import TodoBar from "../TodoBar/TodoBar";
 import TodoItem from "../TodoItem/TodoItem";
 import { MetaResponse, Todo, TodoInfo } from "../../types";
+import {
+  fetchTodos,
+  fetchDelete,
+  fetchPost,
+  fetchEdit,
+  fetchChecked,
+} from "../../api/TodoApi";
 
 const TodoList = () => {
-  const url = "https://easydev.club/api/v2";
   const [todos, setTodos] = useState<MetaResponse<Todo, TodoInfo>>({
     data: [],
     info: undefined,
@@ -15,18 +21,8 @@ const TodoList = () => {
   const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
-    fetchTodos();
+    fetchTodos(setTodos);
   }, []);
-
-  const fetchTodos = () => {
-    fetch(url + "/todos?filter={status}", {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((result: MetaResponse<Todo, TodoInfo>) => {
-        setTodos(result);
-      });
-  };
 
   const filteredTodos = () => {
     switch (filter) {
@@ -41,52 +37,9 @@ const TodoList = () => {
     }
   };
 
-  const fetchPost = (todo: string) => {
-    fetch(url + "/todos", {
-      method: "POST",
-      body: JSON.stringify({ title: todo, isDone: false }),
-    })
-      .then((response) => response.json())
-      .then(() => {
-        fetchTodos();
-      });
-  };
-
-  const fetchDelete = (item: Todo) => {
-    fetch(`${url}/todos/${item.id}`, { method: "DELETE" }).then(() => {
-      fetchTodos();
-    });
-  };
-
-  const fetchChecked = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    item: Todo
-  ) => {
-    const updatedIsDone = event.target.checked;
-    fetch(`${url}/todos/${item.id}`, {
-      method: "PUT",
-      body: JSON.stringify({ isDone: updatedIsDone }),
-    })
-      .then((response) => response.json())
-      .then(() => {
-        fetchTodos();
-      });
-  };
-
-  const fetchEdit = (item: Todo, newTitle: string) => {
-    fetch(`${url}/todos/${item.id}`, {
-      method: "PUT",
-      body: JSON.stringify({ title: newTitle }),
-    })
-      .then((response) => response.json())
-      .then(() => {
-        fetchTodos();
-      });
-  };
-
   return (
     <div className="todo-list">
-      <TodoHeader fetchPost={fetchPost} />
+      <TodoHeader fetchPost={fetchPost} setTodos={setTodos} />
       <TodoBar currentFilter={filter} todos={todos} setFilter={setFilter} />
       <div className="todos-wrap">
         <ul className="todo-items">
@@ -99,6 +52,7 @@ const TodoList = () => {
                 fetchChecked={fetchChecked}
                 fetchDelete={fetchDelete}
                 fetchEdit={fetchEdit}
+                setTodos={setTodos}
               />
             ))}
         </ul>

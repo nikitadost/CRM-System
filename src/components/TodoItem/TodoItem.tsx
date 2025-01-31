@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Todo } from "../../types";
+import { MetaResponse, Todo, TodoInfo } from "../../types";
 import BtnDelete from "../../UI/BtnDelete/BtnDelete";
 import InputIsDone from "../../UI/InputIsDone/InputIsDone";
 import BtnEdit from "../../UI/BtnEdit/BtnEdit";
@@ -9,10 +9,19 @@ interface TodoItemProps {
   item: Todo;
   fetchChecked: (
     event: React.ChangeEvent<HTMLInputElement>,
-    item: Todo
+    item: Todo,
+    setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
   ) => void;
-  fetchDelete: (item: Todo) => void;
-  fetchEdit: (item: Todo, newTitle: string) => void;
+  fetchDelete: (
+    item: Todo,
+    setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
+  ) => void;
+  fetchEdit: (
+    item: Todo,
+    newTitle: string,
+    setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
+  ) => void;
+  setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>;
 }
 
 const TodoItem: React.FC<TodoItemProps> = ({
@@ -20,6 +29,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   fetchChecked,
   fetchDelete,
   fetchEdit,
+  setTodos,
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [newTitle, setNewTitle] = useState(item.title);
@@ -35,7 +45,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
         setError("Task title should be between 2 and 64 characters.");
         return;
       }
-      fetchEdit(item, newTitle);
+      fetchEdit(item, newTitle, setTodos);
       setError("");
     }
     setIsEditMode(!isEditMode);
@@ -49,7 +59,11 @@ const TodoItem: React.FC<TodoItemProps> = ({
 
   return (
     <li className="todo-item">
-      <InputIsDone fetchChecked={fetchChecked} item={item} />
+      <InputIsDone
+        fetchChecked={fetchChecked}
+        item={item}
+        setTodos={setTodos}
+      />
       <div className="relative-container">
         <textarea
           className="todo-item-title"
@@ -67,7 +81,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
           isEditMode={isEditMode}
         />
 
-        <BtnDelete fetchDelete={fetchDelete} item={item} />
+        <BtnDelete fetchDelete={fetchDelete} item={item} setTodos={setTodos} />
       </div>
     </li>
   );
