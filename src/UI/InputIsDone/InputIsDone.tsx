@@ -1,13 +1,13 @@
-import { MetaResponse, Todo, TodoInfo } from "../../types";
+import { SetTodos, Todo } from "../../types";
 
 interface ComponentProps {
   fetchChecked: (
     event: React.ChangeEvent<HTMLInputElement>,
     item: Todo,
-    setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
+    setTodos: SetTodos
   ) => void;
   item: Todo;
-  setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>;
+  setTodos: SetTodos;
 }
 
 const InputIsDone: React.FC<ComponentProps> = ({

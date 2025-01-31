@@ -1,12 +1,9 @@
 import { useState } from "react";
-import { MetaResponse, Todo, TodoInfo } from "../../types";
+import { SetTodos } from "../../types";
 
 interface ComponentProps {
-  fetchPost: (
-    title: string,
-    setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
-  ) => void;
-  setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>;
+  fetchPost: (title: string, setTodos: SetTodos) => void;
+  setTodos: SetTodos;
 }
 
 const TodoHeader: React.FC<ComponentProps> = ({ fetchPost, setTodos }) => {

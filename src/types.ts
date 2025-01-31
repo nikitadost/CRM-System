@@ -23,3 +23,6 @@ export interface MetaResponse<T, N> {
     totalAmount: number;
   };
 }
+export type SetTodos = React.Dispatch<
+  React.SetStateAction<MetaResponse<Todo, TodoInfo>>
+>;

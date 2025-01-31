@@ -1,13 +1,10 @@
-import { MetaResponse, Todo, TodoInfo } from "../../types";
+import { Todo, SetTodos } from "../../types";
 import DeleteIcon from "../Icons/DeleteIcon";
 
 interface ComponentProps {
-  fetchDelete: (
-    item: Todo,
-    setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
-  ) => void;
+  fetchDelete: (item: Todo, setTodos: SetTodos) => void;
   item: Todo;
-  setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>;
+  setTodos: SetTodos;
 }
 
 const BtnDelete: React.FC<ComponentProps> = ({

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MetaResponse, Todo, TodoInfo } from "../../types";
+import { Todo, SetTodos } from "../../types";
 import BtnDelete from "../../UI/BtnDelete/BtnDelete";
 import InputIsDone from "../../UI/InputIsDone/InputIsDone";
 import BtnEdit from "../../UI/BtnEdit/BtnEdit";
@@ -10,18 +10,11 @@ interface TodoItemProps {
   fetchChecked: (
     event: React.ChangeEvent<HTMLInputElement>,
     item: Todo,
-    setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
+    setTodos: SetTodos
   ) => void;
-  fetchDelete: (
-    item: Todo,
-    setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
-  ) => void;
-  fetchEdit: (
-    item: Todo,
-    newTitle: string,
-    setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
-  ) => void;
-  setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>;
+  fetchDelete: (item: Todo, setTodos: SetTodos) => void;
+  fetchEdit: (item: Todo, newTitle: string, setTodos: SetTodos) => void;
+  setTodos: SetTodos;
 }
 
 const TodoItem: React.FC<TodoItemProps> = ({
