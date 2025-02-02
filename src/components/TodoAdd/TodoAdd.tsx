@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { SetTodos } from "../../types";
+import { SetTodos } from "../../types/types";
 
 interface ComponentProps {
   fetchPost: (title: string, setTodos: SetTodos) => void;
   setTodos: SetTodos;
 }
 
-const TodoHeader: React.FC<ComponentProps> = ({ fetchPost, setTodos }) => {
+const TodoAdd: React.FC<ComponentProps> = ({ fetchPost, setTodos }) => {
   const [todo, setTodo] = useState<string>("");
   const [error, setError] = useState<string>("");
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -43,4 +43,4 @@ const TodoHeader: React.FC<ComponentProps> = ({ fetchPost, setTodos }) => {
   );
 };
 
-export default TodoHeader;
+export default TodoAdd;

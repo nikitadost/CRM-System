@@ -1,5 +1,5 @@
-import EditIcon from "../../UI/Icons/EditIcon";
-import SaveIcon from "../../UI/Icons/SaveIcon";
+import EditIcon from "../Icons/EditIcon";
+import SaveIcon from "../Icons/SaveIcon";
 import BtnCancel from "../BtnCancel/BtnCancel";
 
 interface BtnEditProps {

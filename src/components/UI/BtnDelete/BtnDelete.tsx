@@ -1,4 +1,4 @@
-import { Todo, SetTodos } from "../../types";
+import { Todo, SetTodos } from "../../../types/types";
 import DeleteIcon from "../Icons/DeleteIcon";
 
 interface ComponentProps {

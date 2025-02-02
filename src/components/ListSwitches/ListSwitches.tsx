@@ -1,11 +1,11 @@
-import { Todo, TodoInfo, MetaResponse } from "../../types";
+import { Todo, TodoInfo, MetaResponse } from "../../types/types";
 interface ComponentProps {
   todos: MetaResponse<Todo, TodoInfo>;
   setFilter: (filter: string) => void;
   currentFilter: string;
 }
 
-const TodoBar: React.FC<ComponentProps> = ({
+const ListSwitches: React.FC<ComponentProps> = ({
   todos,
   setFilter,
   currentFilter,
@@ -37,4 +37,4 @@ const TodoBar: React.FC<ComponentProps> = ({
   );
 };
 
-export default TodoBar;
+export default ListSwitches;

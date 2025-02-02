@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Todo, SetTodos } from "../../types";
-import BtnDelete from "../../UI/BtnDelete/BtnDelete";
-import InputIsDone from "../../UI/InputIsDone/InputIsDone";
-import BtnEdit from "../../UI/BtnEdit/BtnEdit";
+import { Todo, SetTodos } from "../../types/types";
+import BtnDelete from "../UI/BtnDelete/BtnDelete";
+import InputIsDone from "../UI/InputIsDone/InputIsDone";
+import BtnEdit from "../UI/BtnEdit/BtnEdit";
 
 interface TodoItemProps {
   key: number;

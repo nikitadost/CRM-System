@@ -1,4 +1,4 @@
-import { SetTodos, Todo } from "../../types";
+import { SetTodos, Todo } from "../../../types/types";
 
 interface ComponentProps {
   fetchChecked: (

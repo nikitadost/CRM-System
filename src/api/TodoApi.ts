@@ -1,9 +1,9 @@
-import { MetaResponse, Todo, TodoInfo } from "../types";
-const url = "https://easydev.club/api/v2";
+import { MetaResponse, SetTodos, Todo, TodoInfo } from "../types/types";
+const url = "https://easydev.club/api/v1";
 export const fetchEdit = async (
   item: Todo,
   newTitle: string,
-  setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
+  setTodos: SetTodos
 ) => {
   try {
     const response = await fetch(`${url}/todos/${item.id}`, {
@@ -13,17 +13,14 @@ export const fetchEdit = async (
     if (!response.ok) {
       throw new Error("Failed to edit todo");
     }
-    fetchTodos(setTodos);
+    await fetchTodos(setTodos);
   } catch (err) {
     console.error("Failed to edit todo:", err);
     throw err;
   }
 };
 
-export const fetchDelete = async (
-  item: Todo,
-  setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
-) => {
+export const fetchDelete = async (item: Todo, setTodos: SetTodos) => {
   try {
     const response = await fetch(`${url}/todos/${item.id}`, {
       method: "DELETE",
@@ -31,16 +28,13 @@ export const fetchDelete = async (
     if (!response.ok) {
       throw new Error("Failed to delete todo");
     }
-    fetchTodos(setTodos);
+    await fetchTodos(setTodos);
   } catch (err) {
     console.error("Failed to delete todo:", err);
     throw err;
   }
 };
-export const fetchPost = async (
-  todo: string,
-  setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
-) => {
+export const fetchPost = async (todo: string, setTodos: SetTodos) => {
   try {
     const response = await fetch(url + "/todos", {
       method: "POST",
@@ -49,16 +43,14 @@ export const fetchPost = async (
     if (!response.ok) {
       throw new Error("Failed to add todo");
     }
-    fetchTodos(setTodos);
+    await fetchTodos(setTodos);
   } catch (err) {
     console.error("Failed to add todo:", err);
     throw err;
   }
 };
 
-export const fetchTodos = async (
-  setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
-) => {
+export const fetchTodos = async (setTodos: SetTodos) => {
   try {
     const response = await fetch(url + "/todos?filter={status}", {
       method: "GET",
@@ -79,7 +71,7 @@ export const fetchTodos = async (
 export const fetchChecked = async (
   event: React.ChangeEvent<HTMLInputElement>,
   item: Todo,
-  setTodos: React.Dispatch<React.SetStateAction<MetaResponse<Todo, TodoInfo>>>
+  setTodos: SetTodos
 ) => {
   try {
     const updatedIsDone = event.target.checked;
@@ -90,7 +82,7 @@ export const fetchChecked = async (
     if (!response.ok) {
       throw new Error("Failed to update todo status");
     }
-    fetchTodos(setTodos);
+    await fetchTodos(setTodos);
   } catch (err) {
     console.error("Failed to update todo status:", err);
     throw err;
