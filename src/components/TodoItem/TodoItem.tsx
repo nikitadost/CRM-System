@@ -1,29 +1,19 @@
 import React, { useState } from "react";
-import { Todo, SetTodos } from "../../types/types";
-import BtnDelete from "../UI/BtnDelete/BtnDelete";
-import InputIsDone from "../UI/InputIsDone/InputIsDone";
-import BtnEdit from "../UI/BtnEdit/BtnEdit";
+import { Todo, TodoStatus } from "../../types/types";
+import DeleteIcon from "../UI/Icons/DeleteIcon";
+import SaveIcon from "../UI/Icons/SaveIcon";
+import EditIcon from "../UI/Icons/EditIcon";
+import CancelIcon from "../UI/Icons/CancelIcon";
+import { fetchDelete, fetchEdit, fetchChecked } from "../../api/TodoApi";
 
 interface TodoItemProps {
+  handleFetch: (status: TodoStatus) => void;
   key: number;
   item: Todo;
-  fetchChecked: (
-    event: React.ChangeEvent<HTMLInputElement>,
-    item: Todo,
-    setTodos: SetTodos
-  ) => void;
-  fetchDelete: (item: Todo, setTodos: SetTodos) => void;
-  fetchEdit: (item: Todo, newTitle: string, setTodos: SetTodos) => void;
-  setTodos: SetTodos;
+  filter: TodoStatus;
 }
 
-const TodoItem: React.FC<TodoItemProps> = ({
-  item,
-  fetchChecked,
-  fetchDelete,
-  fetchEdit,
-  setTodos,
-}) => {
+const TodoItem: React.FC<TodoItemProps> = ({ item, handleFetch, filter }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [newTitle, setNewTitle] = useState(item.title);
   const [error, setError] = useState<string>("");
@@ -32,13 +22,14 @@ const TodoItem: React.FC<TodoItemProps> = ({
     setNewTitle(event.target.value);
   };
 
-  const handleEditTitle = () => {
+  const handleEditTitle = async () => {
     if (isEditMode) {
       if (newTitle.length < 2 || newTitle.length > 64) {
         setError("Task title should be between 2 and 64 characters.");
         return;
       }
-      fetchEdit(item, newTitle, setTodos);
+      await fetchEdit(item.id, newTitle);
+      await handleFetch(filter);
       setError("");
     }
     setIsEditMode(!isEditMode);
@@ -50,12 +41,24 @@ const TodoItem: React.FC<TodoItemProps> = ({
     setError("");
   };
 
+  const handleDelete = async () => {
+    await fetchDelete(item.id);
+    await handleFetch(filter);
+  };
+
+  const handleCheck = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    await fetchChecked(event, item.id);
+    await handleFetch(filter);
+  };
+
   return (
     <li className="todo-item">
-      <InputIsDone
-        fetchChecked={fetchChecked}
-        item={item}
-        setTodos={setTodos}
+      <input
+        type="checkbox"
+        checked={item.isDone}
+        onChange={(event) => {
+          handleCheck(event);
+        }}
       />
       <div className="relative-container">
         <textarea
@@ -66,15 +69,21 @@ const TodoItem: React.FC<TodoItemProps> = ({
         />
         {error && <p className="error">{error}</p>}
       </div>
-
       <div className="btns-container">
-        <BtnEdit
-          handleCancelEdit={handleCancelEdit}
-          handleEditTitle={handleEditTitle}
-          isEditMode={isEditMode}
-        />
+        <div className="edit-btns">
+          <button className="edit-btn" onClick={handleEditTitle}>
+            {isEditMode ? <SaveIcon /> : <EditIcon />}
+          </button>
+          {isEditMode ? (
+            <div className="cancel-btn" onClick={handleCancelEdit}>
+              <CancelIcon />
+            </div>
+          ) : null}
+        </div>
 
-        <BtnDelete fetchDelete={fetchDelete} item={item} setTodos={setTodos} />
+        <div className="delete-btn" onClick={handleDelete}>
+          <DeleteIcon />
+        </div>
       </div>
     </li>
   );

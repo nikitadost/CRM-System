@@ -1,37 +1,48 @@
-import { Todo, TodoInfo, MetaResponse } from "../../types/types";
+import { TodoInfo, TodoStatus } from "../../types/types";
 interface ComponentProps {
-  todos: MetaResponse<Todo, TodoInfo>;
-  setFilter: (filter: string) => void;
-  currentFilter: string;
+  setFilter: (filter: TodoStatus) => void;
+  currentFilter: TodoStatus;
+  info: TodoInfo;
+  handleFetch: (status: TodoStatus) => void;
 }
 
 const ListSwitches: React.FC<ComponentProps> = ({
-  todos,
+  info,
   setFilter,
   currentFilter,
+  handleFetch,
 }) => {
+  const handleFilter = (filter: TodoStatus) => {
+    setFilter(filter);
+    handleFetch(filter);
+  };
+
   return (
     <div className="todo-bar">
       <h3
-        className={`title ${currentFilter === "all" ? "selected" : ""}`}
-        onClick={() => setFilter("all")}
+        className={`title ${
+          currentFilter === TodoStatus.all ? "selected" : ""
+        }`}
+        onClick={() => handleFilter(TodoStatus.all)}
       >
-        Все ({todos && todos.info && todos.info.all ? todos.info.all : 0})
+        Все ({info.all})
       </h3>
       <h3
-        className={`title ${currentFilter === "inWork" ? "selected" : ""}`}
-        onClick={() => setFilter("inWork")}
+        className={`title ${
+          currentFilter === TodoStatus.inWork ? "selected" : ""
+        }`}
+        onClick={() => handleFilter(TodoStatus.inWork)}
       >
         в работе(
-        {todos && todos.info && todos.info.inWork ? todos.info.inWork : 0})
+        {info.inWork})
       </h3>
       <h3
-        className={`title ${currentFilter === "completed" ? "selected" : ""}`}
-        onClick={() => setFilter("completed")}
+        className={`title ${
+          currentFilter === TodoStatus.completed ? "selected" : ""
+        }`}
+        onClick={() => handleFilter(TodoStatus.completed)}
       >
-        сделано (
-        {todos && todos.info && todos.info.completed ? todos.info.completed : 0}
-        )
+        сделано ({info.completed})
       </h3>
     </div>
   );

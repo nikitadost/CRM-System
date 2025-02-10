@@ -1,9 +1,9 @@
-import TodoList from "./pages/TodoListPage/TodoListPage";
+import TodoListPage from "./pages/TodoListPage/TodoListPage";
 
 const App = () => {
   return (
     <>
-      <TodoList />
+      <TodoListPage />
     </>
   );
 };

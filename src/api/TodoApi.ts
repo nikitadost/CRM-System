@@ -1,40 +1,37 @@
-import { MetaResponse, SetTodos, Todo, TodoInfo } from "../types/types";
+import { MetaResponse, Todo, TodoInfo, TodoStatus } from "../types/types";
+
 const url = "https://easydev.club/api/v1";
-export const fetchEdit = async (
-  item: Todo,
-  newTitle: string,
-  setTodos: SetTodos
-) => {
+
+export const fetchEdit = async (id: number, newTitle: string) => {
   try {
-    const response = await fetch(`${url}/todos/${item.id}`, {
+    const response = await fetch(`${url}/todos/${id}`, {
       method: "PUT",
       body: JSON.stringify({ title: newTitle }),
     });
     if (!response.ok) {
       throw new Error("Failed to edit todo");
     }
-    await fetchTodos(setTodos);
   } catch (err) {
     console.error("Failed to edit todo:", err);
     throw err;
   }
 };
 
-export const fetchDelete = async (item: Todo, setTodos: SetTodos) => {
+export const fetchDelete = async (id: number) => {
   try {
-    const response = await fetch(`${url}/todos/${item.id}`, {
+    const response = await fetch(`${url}/todos/${id}`, {
       method: "DELETE",
     });
     if (!response.ok) {
       throw new Error("Failed to delete todo");
     }
-    await fetchTodos(setTodos);
   } catch (err) {
     console.error("Failed to delete todo:", err);
     throw err;
   }
 };
-export const fetchPost = async (todo: string, setTodos: SetTodos) => {
+
+export const fetchPost = async (todo: string) => {
   try {
     const response = await fetch(url + "/todos", {
       method: "POST",
@@ -43,23 +40,22 @@ export const fetchPost = async (todo: string, setTodos: SetTodos) => {
     if (!response.ok) {
       throw new Error("Failed to add todo");
     }
-    await fetchTodos(setTodos);
   } catch (err) {
     console.error("Failed to add todo:", err);
     throw err;
   }
 };
 
-export const fetchTodos = async (setTodos: SetTodos) => {
+export const fetchTodos = async (status: TodoStatus) => {
   try {
-    const response = await fetch(url + "/todos?filter={status}", {
+    const response = await fetch(url + `/todos?filter=${status}`, {
       method: "GET",
     });
     if (!response.ok) {
       throw new Error("Failed to fetch todos");
     }
     const result: MetaResponse<Todo, TodoInfo> = await response.json();
-    setTodos(result);
+    return result;
   } catch (err) {
     {
       console.error("Failed to fetch todos:", err);
@@ -70,19 +66,17 @@ export const fetchTodos = async (setTodos: SetTodos) => {
 
 export const fetchChecked = async (
   event: React.ChangeEvent<HTMLInputElement>,
-  item: Todo,
-  setTodos: SetTodos
+  id: number
 ) => {
   try {
     const updatedIsDone = event.target.checked;
-    const response = await fetch(`${url}/todos/${item.id}`, {
+    const response = await fetch(`${url}/todos/${id}`, {
       method: "PUT",
       body: JSON.stringify({ isDone: updatedIsDone }),
     });
     if (!response.ok) {
       throw new Error("Failed to update todo status");
     }
-    await fetchTodos(setTodos);
   } catch (err) {
     console.error("Failed to update todo status:", err);
     throw err;

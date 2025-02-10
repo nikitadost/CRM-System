@@ -1,24 +1,26 @@
 import { useState } from "react";
-import { SetTodos } from "../../types/types";
-
+import { TodoStatus } from "../../types/types";
+import { fetchPost } from "../../api/TodoApi";
 interface ComponentProps {
-  fetchPost: (title: string, setTodos: SetTodos) => void;
-  setTodos: SetTodos;
+  handleFetch: (status: TodoStatus) => void;
+  currentFilter: TodoStatus;
 }
-
-const TodoAdd: React.FC<ComponentProps> = ({ fetchPost, setTodos }) => {
+const TodoAdd: React.FC<ComponentProps> = ({ handleFetch, currentFilter }) => {
   const [todo, setTodo] = useState<string>("");
   const [error, setError] = useState<string>("");
+
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = event.target;
     setTodo(value);
   };
-  const handlePost = () => {
+
+  const handlePost = async () => {
     if (todo.length < 2 || todo.length > 64) {
       setError("Task title should be between 2 and 64 characters.");
       return;
     }
-    fetchPost(todo, setTodos);
+    await fetchPost(todo);
+    await handleFetch(currentFilter);
     setTodo("");
     setError("");
   };

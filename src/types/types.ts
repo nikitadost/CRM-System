@@ -23,6 +23,9 @@ export interface MetaResponse<T, N> {
     totalAmount: number;
   };
 }
-export type SetTodos = React.Dispatch<
-  React.SetStateAction<MetaResponse<Todo, TodoInfo>>
->;
+
+export enum TodoStatus {
+  all = "all",
+  completed = "completed",
+  inWork = "inWork",
+}
