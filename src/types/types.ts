@@ -25,7 +25,7 @@ export interface MetaResponse<T, N> {
 }
 
 export enum TodoStatus {
-  all = "all",
-  completed = "completed",
-  inWork = "inWork",
+  ALL = "all",
+  COMPLETED = "completed",
+  IN_WORK = "inWork",
 }

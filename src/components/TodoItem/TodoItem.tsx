@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Todo, TodoStatus } from "../../types/types";
+import { Todo } from "../../types/types";
 import DeleteIcon from "../UI/Icons/DeleteIcon";
 import SaveIcon from "../UI/Icons/SaveIcon";
 import EditIcon from "../UI/Icons/EditIcon";
@@ -7,13 +7,11 @@ import CancelIcon from "../UI/Icons/CancelIcon";
 import { fetchDelete, fetchEdit, fetchChecked } from "../../api/TodoApi";
 
 interface TodoItemProps {
-  handleFetch: (status: TodoStatus) => void;
-  key: number;
+  handleFetch: () => void;
   item: Todo;
-  filter: TodoStatus;
 }
 
-const TodoItem: React.FC<TodoItemProps> = ({ item, handleFetch, filter }) => {
+const TodoItem: React.FC<TodoItemProps> = ({ item, handleFetch }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [newTitle, setNewTitle] = useState(item.title);
   const [error, setError] = useState<string>("");
@@ -22,17 +20,19 @@ const TodoItem: React.FC<TodoItemProps> = ({ item, handleFetch, filter }) => {
     setNewTitle(event.target.value);
   };
 
-  const handleEditTitle = async () => {
-    if (isEditMode) {
-      if (newTitle.length < 2 || newTitle.length > 64) {
-        setError("Task title should be between 2 and 64 characters.");
-        return;
-      }
-      await fetchEdit(item.id, newTitle);
-      await handleFetch(filter);
-      setError("");
+  const handleEditTitle = () => {
+    setIsEditMode(true);
+  };
+
+  const handleSaveTitle = async () => {
+    if (newTitle.length < 2 || newTitle.length > 64) {
+      setError("Task title should be between 2 and 64 characters.");
+      return;
     }
-    setIsEditMode(!isEditMode);
+    await fetchEdit(item.id, newTitle);
+    await handleFetch();
+    setError("");
+    setIsEditMode(false);
   };
 
   const handleCancelEdit = () => {
@@ -43,12 +43,12 @@ const TodoItem: React.FC<TodoItemProps> = ({ item, handleFetch, filter }) => {
 
   const handleDelete = async () => {
     await fetchDelete(item.id);
-    await handleFetch(filter);
+    await handleFetch();
   };
 
   const handleCheck = async (event: React.ChangeEvent<HTMLInputElement>) => {
     await fetchChecked(event, item.id);
-    await handleFetch(filter);
+    await handleFetch();
   };
 
   return (
@@ -71,14 +71,21 @@ const TodoItem: React.FC<TodoItemProps> = ({ item, handleFetch, filter }) => {
       </div>
       <div className="btns-container">
         <div className="edit-btns">
-          <button className="edit-btn" onClick={handleEditTitle}>
-            {isEditMode ? <SaveIcon /> : <EditIcon />}
-          </button>
-          {isEditMode ? (
+          {!isEditMode && (
+            <button className="edit-btn" onClick={handleEditTitle}>
+              <EditIcon />
+            </button>
+          )}
+          {isEditMode && (
+            <button className="edit-btn" onClick={handleSaveTitle}>
+              <SaveIcon />
+            </button>
+          )}
+          {isEditMode && (
             <div className="cancel-btn" onClick={handleCancelEdit}>
               <CancelIcon />
             </div>
-          ) : null}
+          )}
         </div>
 
         <div className="delete-btn" onClick={handleDelete}>

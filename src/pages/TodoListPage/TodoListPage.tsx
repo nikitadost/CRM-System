@@ -8,7 +8,7 @@ import TodoList from "../../components/TodoList/TodoList";
 
 const TodoListPage = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<TodoStatus>(TodoStatus.all);
+  const [filter, setFilter] = useState<TodoStatus>(TodoStatus.ALL);
   const [info, setInfo] = useState<TodoInfo>({
     all: 0,
     completed: 0,
@@ -24,19 +24,19 @@ const TodoListPage = () => {
   };
 
   useEffect(() => {
-    handleFetch(TodoStatus.all);
+    handleFetch(TodoStatus.ALL);
   }, []);
 
   return (
     <div className="todo-list">
-      <TodoAdd handleFetch={handleFetch} currentFilter={filter} />
+      <TodoAdd handleFetch={() => handleFetch(filter)} />
       <ListSwitches
         currentFilter={filter}
         info={info}
         setFilter={setFilter}
         handleFetch={handleFetch}
       />
-      <TodoList items={todos} filter={filter} handleFetch={handleFetch} />
+      <TodoList items={todos} handleFetch={() => handleFetch(filter)} />
     </div>
   );
 };

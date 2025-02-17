@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { TodoStatus } from "../../types/types";
 import { fetchPost } from "../../api/TodoApi";
+
 interface ComponentProps {
-  handleFetch: (status: TodoStatus) => void;
-  currentFilter: TodoStatus;
+  handleFetch: () => void;
 }
-const TodoAdd: React.FC<ComponentProps> = ({ handleFetch, currentFilter }) => {
+const TodoAdd: React.FC<ComponentProps> = ({ handleFetch }) => {
   const [todo, setTodo] = useState<string>("");
   const [error, setError] = useState<string>("");
 
@@ -20,7 +19,7 @@ const TodoAdd: React.FC<ComponentProps> = ({ handleFetch, currentFilter }) => {
       return;
     }
     await fetchPost(todo);
-    await handleFetch(currentFilter);
+    await handleFetch();
     setTodo("");
     setError("");
   };
