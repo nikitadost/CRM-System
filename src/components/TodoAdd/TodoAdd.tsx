@@ -1,46 +1,46 @@
-import { useState } from "react";
 import { fetchPost } from "../../api/TodoApi";
-
+import { Form, Input, Button } from "antd";
 interface ComponentProps {
   handleFetch: () => void;
 }
 const TodoAdd: React.FC<ComponentProps> = ({ handleFetch }) => {
-  const [todo, setTodo] = useState<string>("");
-  const [error, setError] = useState<string>("");
+  const [form] = Form.useForm();
 
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { value } = event.target;
-    setTodo(value);
-  };
-
-  const handlePost = async () => {
-    if (todo.length < 2 || todo.length > 64) {
-      setError("Task title should be between 2 and 64 characters.");
-      return;
+  const handleSubmit = async () => {
+    try {
+      const validatedField = await form.validateFields();
+      const todo = validatedField.title;
+      await fetchPost(todo);
+      await handleFetch();
+      await form.resetFields();
+    } catch (err) {
+      console.error("Failed to add todo:", err);
+      throw err;
     }
-    await fetchPost(todo);
-    await handleFetch();
-    setTodo("");
-    setError("");
   };
 
   return (
-    <div className="todo-header">
-      <div>
-        {error && <p className="error">{error}</p>}
-        <textarea
-          value={todo}
-          className="todo-textarea"
-          placeholder="Task To Be Done..."
-          onChange={handleChange}
-          autoComplete="off"
-          required
-        />
-      </div>
-      <button className="add-btn" onClick={handlePost}>
+    <Form form={form} layout="vertical">
+      <Form.Item
+        name="title"
+        rules={[
+          { required: true, message: "Task title is required!" },
+          {
+            min: 2,
+            message: "Task title should be between 2 and 64 characters.",
+          },
+          {
+            max: 64,
+            message: "Task title should be between 2 and 64 characters.",
+          },
+        ]}
+      >
+        <Input placeholder="Task To Be Done..." />
+      </Form.Item>
+      <Button type="primary" onClick={handleSubmit}>
         Add
-      </button>
-    </div>
+      </Button>
+    </Form>
   );
 };
 

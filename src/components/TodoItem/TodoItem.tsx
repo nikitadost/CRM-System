@@ -1,23 +1,30 @@
 import React, { useState } from "react";
 import { Todo } from "../../types/types";
-import DeleteIcon from "../UI/Icons/DeleteIcon";
-import SaveIcon from "../UI/Icons/SaveIcon";
-import EditIcon from "../UI/Icons/EditIcon";
-import CancelIcon from "../UI/Icons/CancelIcon";
+import {
+  EditFilled,
+  DeleteFilled,
+  SaveFilled,
+  CloseCircleFilled,
+} from "@ant-design/icons";
 import { fetchDelete, fetchEdit, fetchChecked } from "../../api/TodoApi";
+import { Button, Checkbox, Flex, Form, Input } from "antd";
+import type { CheckboxChangeEvent } from "antd";
 
 interface TodoItemProps {
   handleFetch: () => void;
   item: Todo;
 }
-
 const TodoItem: React.FC<TodoItemProps> = ({ item, handleFetch }) => {
   const [isEditMode, setIsEditMode] = useState(false);
-  const [newTitle, setNewTitle] = useState(item.title);
-  const [error, setError] = useState<string>("");
+  const [checked, setChecked] = useState<boolean>(item.isDone);
+  const [form] = Form.useForm();
 
-  const handleTitleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setNewTitle(event.target.value);
+  const handleCheck = async (e: CheckboxChangeEvent) => {
+    const status = e.target.checked;
+    setChecked(status);
+    console.log(status);
+    await fetchChecked(status, item.id);
+    await handleFetch();
   };
 
   const handleEditTitle = () => {
@@ -25,20 +32,21 @@ const TodoItem: React.FC<TodoItemProps> = ({ item, handleFetch }) => {
   };
 
   const handleSaveTitle = async () => {
-    if (newTitle.length < 2 || newTitle.length > 64) {
-      setError("Task title should be between 2 and 64 characters.");
-      return;
+    try {
+      const validatedField = await form.validateFields();
+      const newTitle = validatedField.title;
+      await fetchEdit(item.id, newTitle);
+      await handleFetch();
+      setIsEditMode(false);
+    } catch (err) {
+      console.error("Failed to add todo:", err);
+      throw err;
     }
-    await fetchEdit(item.id, newTitle);
-    await handleFetch();
-    setError("");
-    setIsEditMode(false);
   };
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = async () => {
+    await form.setFieldsValue({ title: item.title });
     setIsEditMode(false);
-    setNewTitle(item.title);
-    setError("");
   };
 
   const handleDelete = async () => {
@@ -46,53 +54,81 @@ const TodoItem: React.FC<TodoItemProps> = ({ item, handleFetch }) => {
     await handleFetch();
   };
 
-  const handleCheck = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    await fetchChecked(event, item.id);
-    await handleFetch();
-  };
-
   return (
-    <li className="todo-item">
-      <input
-        type="checkbox"
-        checked={item.isDone}
-        onChange={(event) => {
-          handleCheck(event);
-        }}
-      />
-      <div className="relative-container">
-        <textarea
-          className="todo-item-title"
-          value={isEditMode ? newTitle : item.title}
-          disabled={!isEditMode}
-          onChange={handleTitleChange}
-        />
-        {error && <p className="error">{error}</p>}
-      </div>
-      <div className="btns-container">
-        <div className="edit-btns">
-          {!isEditMode && (
-            <button className="edit-btn" onClick={handleEditTitle}>
-              <EditIcon />
-            </button>
-          )}
-          {isEditMode && (
-            <button className="edit-btn" onClick={handleSaveTitle}>
-              <SaveIcon />
-            </button>
-          )}
-          {isEditMode && (
-            <div className="cancel-btn" onClick={handleCancelEdit}>
-              <CancelIcon />
-            </div>
-          )}
-        </div>
+    <Flex
+      align="center"
+      justify="space-between"
+      style={{
+        width: "100%",
+        color: "black",
+        backgroundColor: "white",
+        border: "none",
+      }}
+    >
+      <Checkbox checked={checked} onChange={(e) => handleCheck(e)} />
 
-        <div className="delete-btn" onClick={handleDelete}>
-          <DeleteIcon />
-        </div>
-      </div>
-    </li>
+      <Form
+        form={form}
+        initialValues={{ title: item.title }}
+        style={{
+          alignItems: "center",
+          display: "flex",
+          justifyContent: "flex-start",
+          width: "100%",
+          height: "100%",
+          color: "black",
+          backgroundColor: "white",
+          border: "none",
+          padding: "10px",
+        }}
+      >
+        <Form.Item
+          name="title"
+          rules={[
+            { required: true, message: "Task title is required!" },
+            {
+              min: 2,
+              message: "Task title must be at least 2 characters long!",
+            },
+            { max: 64, message: "Task title must not exceed 64 characters!" },
+          ]}
+        >
+          <Input
+            style={{
+              padding: 0,
+              color: "black",
+              backgroundColor: "white",
+              border: "none",
+            }}
+            placeholder="Task title"
+            disabled={!isEditMode}
+            className="container"
+          />
+        </Form.Item>
+      </Form>
+
+      {!isEditMode && (
+        <Button color="primary" variant="outlined" onClick={handleEditTitle}>
+          <EditFilled />
+        </Button>
+      )}
+      {isEditMode && (
+        <Button color="primary" variant="outlined" onClick={handleSaveTitle}>
+          <SaveFilled />
+        </Button>
+      )}
+      {isEditMode && (
+        <Button
+          style={{ backgroundColor: "#ffffff" }}
+          onClick={handleCancelEdit}
+        >
+          <CloseCircleFilled />
+        </Button>
+      )}
+      <Button color="danger" variant="solid" onClick={handleDelete}>
+        <DeleteFilled />
+      </Button>
+    </Flex>
   );
 };
 

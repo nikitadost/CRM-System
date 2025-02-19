@@ -1,45 +1,15 @@
-import { MetaResponse, Todo, TodoInfo, TodoStatus } from "../types/types";
+import axios from "axios";
+import { TodoStatus } from "../types/types";
 
 const url = "https://easydev.club/api/v1";
 
-export const fetchEdit = async (id: number, newTitle: string) => {
-  try {
-    const response = await fetch(`${url}/todos/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({ title: newTitle }),
-    });
-    if (!response.ok) {
-      throw new Error("Failed to edit todo");
-    }
-  } catch (err) {
-    console.error("Failed to edit todo:", err);
-    throw err;
-  }
-};
-
-export const fetchDelete = async (id: number) => {
-  try {
-    const response = await fetch(`${url}/todos/${id}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      throw new Error("Failed to delete todo");
-    }
-  } catch (err) {
-    console.error("Failed to delete todo:", err);
-    throw err;
-  }
-};
-
 export const fetchPost = async (todo: string) => {
   try {
-    const response = await fetch(url + "/todos", {
-      method: "POST",
-      body: JSON.stringify({ title: todo, isDone: false }),
+    await axios.post(url + "/todos", {
+      title: todo,
+      isDone: false,
     });
-    if (!response.ok) {
-      throw new Error("Failed to add todo");
-    }
+    console.log("это пост");
   } catch (err) {
     console.error("Failed to add todo:", err);
     throw err;
@@ -48,14 +18,9 @@ export const fetchPost = async (todo: string) => {
 
 export const fetchTodos = async (status: TodoStatus) => {
   try {
-    const response = await fetch(url + `/todos?filter=${status}`, {
-      method: "GET",
-    });
-    if (!response.ok) {
-      throw new Error("Failed to fetch todos");
-    }
-    const result: MetaResponse<Todo, TodoInfo> = await response.json();
-    return result;
+    const response = await axios.get(url + `/todos?filter=${status}`);
+    console.log("фетч тудос", response.data);
+    return response.data;
   } catch (err) {
     {
       console.error("Failed to fetch todos:", err);
@@ -64,21 +29,34 @@ export const fetchTodos = async (status: TodoStatus) => {
   }
 };
 
-export const fetchChecked = async (
-  event: React.ChangeEvent<HTMLInputElement>,
-  id: number
-) => {
+export const fetchEdit = async (id: number, newTitle: string) => {
   try {
-    const updatedIsDone = event.target.checked;
-    const response = await fetch(`${url}/todos/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({ isDone: updatedIsDone }),
+    await axios.put(`${url}/todos/${id}`, { title: newTitle });
+    console.log("изменен");
+  } catch (err) {
+    console.error("Failed to edit todo:", err);
+    throw err;
+  }
+};
+
+export const fetchChecked = async (updatedIsDone: boolean, id: number) => {
+  try {
+    await axios.put(`${url}/todos/${id}`, {
+      isDone: updatedIsDone,
     });
-    if (!response.ok) {
-      throw new Error("Failed to update todo status");
-    }
+    console.log("чекед");
   } catch (err) {
     console.error("Failed to update todo status:", err);
+    throw err;
+  }
+};
+
+export const fetchDelete = async (id: number) => {
+  try {
+    await axios.delete(`${url}/todos/${id}`);
+    console.log("удален");
+  } catch (err) {
+    console.error("Failed to delete todo:", err);
     throw err;
   }
 };

@@ -1,3 +1,4 @@
+import { List } from "antd";
 import { Todo } from "../../types/types";
 import TodoItem from "../TodoItem/TodoItem";
 interface TodoListProps {
@@ -6,13 +7,27 @@ interface TodoListProps {
 }
 const TodoList: React.FC<TodoListProps> = ({ items, handleFetch }) => {
   return (
-    <div className="todos-wrap">
-      <ul className="todo-items">
-        {items.map((item: Todo) => (
+    <List
+      className="todos-wrap"
+      style={{
+        padding: "0",
+        color: "black",
+        backgroundColor: "white",
+        border: "none",
+        width: "100%",
+        overflowY: "auto",
+        height: "500px",
+        scrollbarWidth: "none",
+        scrollbarColor: "#888 #333",
+      }}
+      bordered
+      dataSource={items}
+      renderItem={(item) => (
+        <List.Item>
           <TodoItem key={item.id} item={item} handleFetch={handleFetch} />
-        ))}
-      </ul>
-    </div>
+        </List.Item>
+      )}
+    />
   );
 };
 
