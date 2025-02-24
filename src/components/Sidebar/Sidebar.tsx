@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { UnorderedListOutlined, ProfileOutlined } from "@ant-design/icons";
 import { Menu, MenuProps } from "antd";
 import Sider from "antd/es/layout/Sider";
+import React from "react";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -19,34 +20,46 @@ const items: MenuItem[] = [
   },
 ];
 
-const Sidebar = () => {
+const Sidebar = React.memo(() => {
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
-  const [current, setCurrent] = useState("");
-  const onClick: MenuProps["onClick"] = (e) => {
-    setCurrent(e.key);
-  };
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [current, setCurrent] = useState<string>("");
+  const onClick: MenuProps["onClick"] = useCallback(
+    (e: { key: React.SetStateAction<string> }) => {
+      setCurrent(e.key);
+    },
+    []
+  );
+  const path = useMemo(() => {
+    return location.pathname.split("/")[1];
+  }, [location]);
 
   useEffect(() => {
-    const path = location.pathname.split("/")[1];
-    setCurrent(path);
-  }, [location.pathname]);
+    if (path !== current) {
+      setCurrent(path);
+    }
+  }, [path, current, setCurrent]);
+  console.log("Sidebar render");
   return (
     <Sider
       collapsible
-      collapsed={collapsed}
-      onCollapse={(value) => setCollapsed(value)}
+      collapsed={useMemo(() => collapsed, [collapsed])}
+      onCollapse={useCallback(
+        (value: boolean | ((prevState: boolean) => boolean)) =>
+          setCollapsed(value),
+        [setCollapsed]
+      )}
     >
       <div className="demo-logo-vertical" />
       <Menu
         onClick={onClick}
         theme="dark"
         mode="inline"
-        items={items}
-        selectedKeys={[current]}
+        items={useMemo(() => items, [])}
+        selectedKeys={[useMemo(() => current, [current])]}
       />
     </Sider>
   );
-};
+});
 
 export default Sidebar;

@@ -1,12 +1,13 @@
+import React, { useCallback } from "react";
 import { fetchPost } from "../../api/TodoApi";
 import { Form, Input, Button } from "antd";
 interface ComponentProps {
   handleFetch: () => void;
 }
-const TodoAdd: React.FC<ComponentProps> = ({ handleFetch }) => {
+const TodoAdd: React.FC<ComponentProps> = React.memo(({ handleFetch }) => {
   const [form] = Form.useForm();
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     try {
       const validatedField = await form.validateFields();
       const todo = validatedField.title;
@@ -17,8 +18,8 @@ const TodoAdd: React.FC<ComponentProps> = ({ handleFetch }) => {
       console.error("Failed to add todo:", err);
       throw err;
     }
-  };
-
+  }, [handleFetch, form]);
+  console.log("TodoAdd render");
   return (
     <Form form={form} layout="vertical">
       <Form.Item
@@ -42,6 +43,6 @@ const TodoAdd: React.FC<ComponentProps> = ({ handleFetch }) => {
       </Button>
     </Form>
   );
-};
+});
 
 export default TodoAdd;

@@ -2,8 +2,10 @@ import { Layout } from "antd";
 import Sidebar from "../Sidebar/Sidebar";
 import { Content, Footer, Header } from "antd/es/layout/layout";
 import { Outlet } from "react-router";
+import React from "react";
 
-const DefaultLayout: React.FC = () => {
+const DefaultLayout: React.FC = React.memo(() => {
+  console.log("DefaultLayout render");
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sidebar />
@@ -18,6 +20,6 @@ const DefaultLayout: React.FC = () => {
       </Layout>
     </Layout>
   );
-};
+});
 
 export default DefaultLayout;
