@@ -36,14 +36,14 @@ const TodoListPage: React.FC<TodoListPageProps> = React.memo(
       }, 5000);
 
       return () => clearInterval(intervalId);
-    }, [handleFetch]);
+    }, [filter, handleFetch]);
     console.log("TodoListPage render");
     return (
       <>
         <TodoAdd handleFetch={handleFetch} />
         <ListSwitches
-          setFilter={useCallback(() => setFilter, [setFilter])}
-          currentFilter={useMemo(() => filter, [filter])}
+          setFilter={setFilter}
+          currentFilter={filter}
           info={useMemo(() => info, [info])}
         />
         <TodoList
