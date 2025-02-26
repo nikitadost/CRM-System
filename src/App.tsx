@@ -1,7 +1,7 @@
 import TodoListPage from "./pages/TodoListPage/TodoListPage";
 import { Routes, Route, Navigate } from "react-router";
 import UserProfilePage from "./pages/UserProfilePage/UserProfilePage";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { TodoStatus } from "./types/types";
 import DefaultLayout from "./components/DefaultLayout/DefaultLayout";
 import React from "react";
@@ -15,10 +15,15 @@ const App: React.FC = React.memo(() => {
     [setFilter]
   );
   const currentPath: string = window.location.pathname.split("/")[1];
+  const [path, setPath] = useState<string>(currentPath);
+
+  useEffect(() => {
+    setPath(currentPath);
+  }, [currentPath]);
   console.log("App render", currentPath);
   return (
     <Routes>
-      <Route path="/" element={<DefaultLayout currentPath={currentPath} />}>
+      <Route path="/" element={<DefaultLayout currentPath={path} />}>
         <Route index element={<Navigate to="/todolist" />} />
         <Route
           path="todolist"
