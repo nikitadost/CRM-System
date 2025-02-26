@@ -11,6 +11,7 @@ interface TodoListProps {
 const TodoList: React.FC<TodoListProps> = React.memo(
   ({ items, handleFetch }) => {
     console.log("TodoList render");
+    const memoizedItems = useMemo(() => items, [items]);
 
     return (
       <List
@@ -27,7 +28,7 @@ const TodoList: React.FC<TodoListProps> = React.memo(
           scrollbarColor: "#888 #333",
         }}
         bordered
-        dataSource={useMemo(() => items, [items])}
+        dataSource={memoizedItems}
         renderItem={(item) => (
           <List.Item key={item.id}>
             <TodoItem item={item} handleFetch={handleFetch} />

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Todo } from "../../types/types";
 import {
   EditFilled,
@@ -16,48 +16,46 @@ interface TodoItemProps {
 }
 const TodoItem: React.FC<TodoItemProps> = React.memo(
   ({ item, handleFetch }) => {
+    const memoizedItem = useMemo(() => item, [item]);
     const [isEditMode, setIsEditMode] = useState(false);
-    const [checked, setChecked] = useState<boolean>(item.isDone);
+    const [checked, setChecked] = useState<boolean>(memoizedItem.isDone);
     const [form] = Form.useForm();
 
-    const handleCheck = useCallback(
-      async (e: CheckboxChangeEvent) => {
-        const status = e.target.checked;
-        setChecked(status);
-        await fetchChecked(status, item.id);
-        await handleFetch();
-      },
-      [item.id, handleFetch]
-    );
+    const handleCheck = async (e: CheckboxChangeEvent) => {
+      const status = e.target.checked;
+      setChecked(status);
+      await fetchChecked(status, memoizedItem.id);
+      await handleFetch();
+    };
 
     const handleEditTitle = () => {
       setIsEditMode(true);
     };
 
-    const handleSaveTitle = useCallback(async () => {
+    const handleSaveTitle = async () => {
       try {
         const validatedField = await form.validateFields();
         const newTitle = validatedField.title;
-        await fetchEdit(item.id, newTitle);
+        await fetchEdit(memoizedItem.id, newTitle);
         await handleFetch();
         setIsEditMode(false);
       } catch (err) {
         console.error("Failed to add todo:", err);
         throw err;
       }
-    }, [form, item.id, handleFetch]);
+    };
 
-    const handleCancelEdit = useCallback(async () => {
-      await form.setFieldsValue({ title: item.title });
+    const handleCancelEdit = async () => {
+      await form.setFieldsValue({ title: memoizedItem.title });
       setIsEditMode(false);
-    }, [form, item.title]);
+    };
 
-    const handleDelete = useCallback(async () => {
-      await fetchDelete(item.id);
+    const handleDelete = async () => {
+      await fetchDelete(memoizedItem.id);
       await handleFetch();
-    }, [item.id, handleFetch]);
+    };
 
-    console.log("TodoItem render", item.id);
+    console.log("TodoItem render", memoizedItem.id);
     return (
       <Flex
         align="center"
@@ -73,7 +71,7 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
 
         <Form
           form={form}
-          initialValues={{ title: item.title }}
+          initialValues={{ title: memoizedItem.title }}
           style={{
             alignItems: "center",
             display: "flex",

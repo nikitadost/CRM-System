@@ -21,10 +21,13 @@ const TodoListPage: React.FC<TodoListPageProps> = React.memo(
 
     const handleFetch = useCallback(async () => {
       const res = await fetchTodos(filter);
-      setTodos(res.data);
-      setInfo(res.info);
-      setFilter(filter);
-    }, [filter, setFilter]);
+      if (JSON.stringify(res.data) !== JSON.stringify(todos)) {
+        setTodos(res.data);
+      }
+      if (JSON.stringify(res.info) !== JSON.stringify(info)) {
+        setInfo(res.info);
+      }
+    }, [filter, info, todos]);
 
     useEffect(() => {
       handleFetch();
