@@ -1,10 +1,10 @@
 import React, { useCallback } from "react";
 import { fetchPost } from "../../api/TodoApi";
 import { Form, Input, Button } from "antd";
-interface ComponentProps {
+interface TodoAddProps {
   handleFetch: () => void;
 }
-const TodoAdd: React.FC<ComponentProps> = React.memo(({ handleFetch }) => {
+const TodoAdd: React.FC<TodoAddProps> = React.memo(({ handleFetch }) => {
   const [form] = Form.useForm();
 
   const handleSubmit = useCallback(async () => {

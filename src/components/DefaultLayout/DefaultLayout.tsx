@@ -4,22 +4,28 @@ import { Content, Footer, Header } from "antd/es/layout/layout";
 import { Outlet } from "react-router";
 import React from "react";
 
-const DefaultLayout: React.FC = React.memo(() => {
-  console.log("DefaultLayout render");
-  return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Sidebar />
-      <Layout>
-        <Header style={{ padding: 0 }} />
-        <Content style={{ margin: "0 16px" }}>
-          <Outlet />
-        </Content>
-        <Footer style={{ textAlign: "center" }}>
-          CRM APP ©{new Date().getFullYear()}
-        </Footer>
+interface DefaultLayoutProps {
+  currentPath: string;
+}
+
+const DefaultLayout: React.FC<DefaultLayoutProps> = React.memo(
+  ({ currentPath }) => {
+    console.log("DefaultLayout render");
+    return (
+      <Layout style={{ minHeight: "100vh" }}>
+        <Sidebar currentPath={currentPath} />
+        <Layout>
+          <Header style={{ padding: 0 }} />
+          <Content style={{ margin: "0 16px" }}>
+            <Outlet />
+          </Content>
+          <Footer style={{ textAlign: "center" }}>
+            CRM APP ©{new Date().getFullYear()}
+          </Footer>
+        </Layout>
       </Layout>
-    </Layout>
-  );
-});
+    );
+  }
+);
 
 export default DefaultLayout;

@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
 import { TodoInfo, TodoStatus } from "../../types/types";
 import { Segmented } from "antd";
-interface ComponentProps {
+interface ListSwitchesProps {
   setFilter: (filter: TodoStatus) => void;
   currentFilter: TodoStatus;
   info: TodoInfo;
 }
-const ListSwitches: React.FC<ComponentProps> = React.memo(
+const ListSwitches: React.FC<ListSwitchesProps> = React.memo(
   ({ info, setFilter, currentFilter }) => {
     const ListSwitchesOptions = useMemo(() => {
       return [

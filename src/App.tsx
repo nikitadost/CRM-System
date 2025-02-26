@@ -14,11 +14,11 @@ const App: React.FC = React.memo(() => {
     },
     [setFilter]
   );
-
-  console.log("App render");
+  const currentPath: string = window.location.pathname.split("/")[1];
+  console.log("App render", currentPath);
   return (
     <Routes>
-      <Route path="/" element={<DefaultLayout />}>
+      <Route path="/" element={<DefaultLayout currentPath={currentPath} />}>
         <Route index element={<Navigate to="/todolist" />} />
         <Route
           path="todolist"

@@ -21,11 +21,8 @@ const TodoListPage: React.FC<TodoListPageProps> = React.memo(
 
     const handleFetch = useCallback(async () => {
       const res = await fetchTodos(filter);
-
       setTodos(res.data);
-
       setInfo(res.info);
-
       setFilter(filter);
     }, [filter, setFilter]);
 
