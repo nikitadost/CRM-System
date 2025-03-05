@@ -6,7 +6,7 @@ import {
   SaveFilled,
   CloseCircleFilled,
 } from "@ant-design/icons";
-import { fetchDelete, fetchEdit, fetchChecked } from "../../api/TodoApi";
+import { deleteTodo, editTodo, updateTodoStatus } from "../../api/TodoApi";
 import { Button, Checkbox, Flex, Form, Input } from "antd";
 import type { CheckboxChangeEvent } from "antd";
 
@@ -24,7 +24,7 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
     const handleCheck = async (e: CheckboxChangeEvent) => {
       const status = e.target.checked;
       setChecked(status);
-      await fetchChecked(status, memoizedItem.id);
+      await updateTodoStatus(status, memoizedItem.id);
       await handleFetch();
     };
 
@@ -36,7 +36,7 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
       try {
         const validatedField = await form.validateFields();
         const newTitle = validatedField.title;
-        await fetchEdit(memoizedItem.id, newTitle);
+        await editTodo(memoizedItem.id, newTitle);
         await handleFetch();
         setIsEditMode(false);
       } catch (err) {
@@ -51,7 +51,7 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
     };
 
     const handleDelete = async () => {
-      await fetchDelete(memoizedItem.id);
+      await deleteTodo(memoizedItem.id);
       await handleFetch();
     };
 

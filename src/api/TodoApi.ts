@@ -1,13 +1,13 @@
 import api from "./api";
 import { TodoStatus } from "../types/types";
 
-export const fetchPost = async (todo: string) => {
+export const postTodo = async (todo: string) => {
   try {
     await api.post("/todos", {
       title: todo,
       isDone: false,
     });
-    console.log("это пост");
+    console.log("postTodo");
   } catch (err) {
     console.error("Failed to add todo:", err);
     throw err;
@@ -19,7 +19,7 @@ export const fetchTodos = async (status: TodoStatus) => {
     const response = await api.get("/todos", {
       params: { filter: status },
     });
-    console.log("фетч тудос", response.data);
+    console.log("fetchTodos", response.data);
     return response.data;
   } catch (err) {
     {
@@ -29,32 +29,32 @@ export const fetchTodos = async (status: TodoStatus) => {
   }
 };
 
-export const fetchEdit = async (id: number, newTitle: string) => {
+export const editTodo = async (id: number, newTitle: string) => {
   try {
     await api.put(`/todos/${id}`, { title: newTitle });
-    console.log("изменен");
+    console.log("editTodo");
   } catch (err) {
-    console.error("Failed to edit todo:", err);
+    console.error("Failed to edit todo :", err);
     throw err;
   }
 };
 
-export const fetchChecked = async (updatedIsDone: boolean, id: number) => {
+export const updateTodoStatus = async (updatedIsDone: boolean, id: number) => {
   try {
     await api.put(`/todos/${id}`, {
       isDone: updatedIsDone,
     });
-    console.log("чекед");
+    console.log("updateTodoStatus");
   } catch (err) {
     console.error("Failed to update todo status:", err);
     throw err;
   }
 };
 
-export const fetchDelete = async (id: number) => {
+export const deleteTodo = async (id: number) => {
   try {
     await api.delete(`/todos/${id}`);
-    console.log("удален");
+    console.log("deleteTodo");
   } catch (err) {
     console.error("Failed to delete todo:", err);
     throw err;
