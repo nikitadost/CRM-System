@@ -15,7 +15,6 @@ const ListSwitches: React.FC<ListSwitchesProps> = React.memo(
         { label: `сделано (${info.completed})`, value: TodoStatus.COMPLETED },
       ];
     }, [info]);
-    console.log("ListSwitches render");
     return (
       <Segmented
         options={ListSwitchesOptions}

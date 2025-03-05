@@ -19,7 +19,7 @@ export const fetchTodos = async (status: TodoStatus) => {
     const response = await api.get("/todos", {
       params: { filter: status },
     });
-    console.log("fetchTodos", response.data);
+    console.log("fetch filtered by status Todos");
     return response.data;
   } catch (err) {
     {

@@ -1,12 +1,23 @@
-import { Flex } from "antd";
+import { Flex, Layout } from "antd";
 import React from "react";
+import MainMenu from "../../components/MainMenu/MainMenu";
 
 const UserProfilePage = React.memo(() => {
-  console.log("UserProfilePage render");
+  console.log("UserProfilePage");
   return (
-    <Flex align="center" justify="center" vertical style={{ height: "100%" }}>
-      <h1>Привет</h1>
-    </Flex>
+    <Layout style={{ minHeight: "100vh" }}>
+      <MainMenu />
+      <Layout>
+        <Flex
+          align="center"
+          justify="center"
+          vertical
+          style={{ height: "100%" }}
+        >
+          <h1>Привет</h1>
+        </Flex>
+      </Layout>
+    </Layout>
   );
 });
 

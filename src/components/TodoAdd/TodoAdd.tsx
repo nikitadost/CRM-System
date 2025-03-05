@@ -8,17 +8,19 @@ interface FormTitle {
   title: string;
 }
 const TodoAdd: React.FC<TodoAddProps> = React.memo(({ handleFetch }) => {
+  const [form] = Form.useForm();
   const onFinish = async (value: FormTitle) => {
     try {
       await postTodo(value.title);
       await handleFetch();
+      form.resetFields();
     } catch (err) {
       console.error("Failed to add todo:", err);
       throw err;
     }
   };
   return (
-    <Form layout="vertical" onFinish={onFinish}>
+    <Form form={form} layout="vertical" onFinish={onFinish}>
       <Form.Item
         name="title"
         rules={[
