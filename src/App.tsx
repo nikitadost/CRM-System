@@ -9,6 +9,7 @@ const App: React.FC = React.memo(() => {
       <Route path="todolist" element={<TodoListPage />} />
       <Route path="user-profile" element={<UserProfilePage />} />
       <Route path="*" element={<Navigate to="/todolist" replace />} />
+      <Route path="/" element={<Navigate to="/todolist" replace />} />
     </Routes>
   );
 });
