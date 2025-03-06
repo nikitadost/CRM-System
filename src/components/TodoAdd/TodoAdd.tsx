@@ -1,27 +1,26 @@
-import React, { useCallback } from "react";
-import { fetchPost } from "../../api/TodoApi";
+import React from "react";
+import { postTodo } from "../../api/TodoApi";
 import { Form, Input, Button } from "antd";
 interface TodoAddProps {
   handleFetch: () => void;
 }
+interface FormTitle {
+  title: string;
+}
 const TodoAdd: React.FC<TodoAddProps> = React.memo(({ handleFetch }) => {
   const [form] = Form.useForm();
-
-  const handleSubmit = useCallback(async () => {
+  const onFinish = async (value: FormTitle) => {
     try {
-      const validatedField = await form.validateFields();
-      const todo = validatedField.title;
-      await fetchPost(todo);
+      await postTodo(value.title);
       await handleFetch();
-      await form.resetFields();
+      form.resetFields();
     } catch (err) {
       console.error("Failed to add todo:", err);
       throw err;
     }
-  }, [handleFetch, form]);
-  console.log("TodoAdd render");
+  };
   return (
-    <Form form={form} layout="vertical">
+    <Form form={form} layout="vertical" onFinish={onFinish}>
       <Form.Item
         name="title"
         rules={[
@@ -38,9 +37,11 @@ const TodoAdd: React.FC<TodoAddProps> = React.memo(({ handleFetch }) => {
       >
         <Input placeholder="Task To Be Done..." />
       </Form.Item>
-      <Button type="primary" onClick={handleSubmit}>
-        Add
-      </Button>
+      <Form.Item>
+        <Button className="login-btn" block type="primary" htmlType="submit">
+          <span className="login-btn-text">Add</span>
+        </Button>
+      </Form.Item>
     </Form>
   );
 });

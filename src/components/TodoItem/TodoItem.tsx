@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Todo } from "../../types/types";
 import {
   EditFilled,
@@ -6,7 +6,7 @@ import {
   SaveFilled,
   CloseCircleFilled,
 } from "@ant-design/icons";
-import { fetchDelete, fetchEdit, fetchChecked } from "../../api/TodoApi";
+import { deleteTodo, editTodo, updateTodoStatus } from "../../api/TodoApi";
 import { Button, Checkbox, Flex, Form, Input } from "antd";
 import type { CheckboxChangeEvent } from "antd";
 
@@ -16,15 +16,14 @@ interface TodoItemProps {
 }
 const TodoItem: React.FC<TodoItemProps> = React.memo(
   ({ item, handleFetch }) => {
-    const memoizedItem = useMemo(() => item, [item]);
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [checked, setChecked] = useState<boolean>(memoizedItem.isDone);
+    const [isEditMode, setIsEditMode] = useState<boolean>(false);
+    const [checked, setChecked] = useState<boolean>(item.isDone);
     const [form] = Form.useForm();
 
     const handleCheck = async (e: CheckboxChangeEvent) => {
       const status = e.target.checked;
       setChecked(status);
-      await fetchChecked(status, memoizedItem.id);
+      await updateTodoStatus(status, item.id);
       await handleFetch();
     };
 
@@ -36,7 +35,7 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
       try {
         const validatedField = await form.validateFields();
         const newTitle = validatedField.title;
-        await fetchEdit(memoizedItem.id, newTitle);
+        await editTodo(item.id, newTitle);
         await handleFetch();
         setIsEditMode(false);
       } catch (err) {
@@ -46,16 +45,15 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
     };
 
     const handleCancelEdit = async () => {
-      await form.setFieldsValue({ title: memoizedItem.title });
+      await form.setFieldsValue({ title: item.title });
       setIsEditMode(false);
     };
 
     const handleDelete = async () => {
-      await fetchDelete(memoizedItem.id);
+      await deleteTodo(item.id);
       await handleFetch();
     };
 
-    console.log("TodoItem render", memoizedItem.id);
     return (
       <Flex
         align="center"
@@ -65,13 +63,14 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
           color: "black",
           backgroundColor: "white",
           border: "none",
+          gap: "20px",
         }}
       >
-        <Checkbox checked={checked} onChange={(e) => handleCheck(e)} />
+        <Checkbox checked={checked} onChange={handleCheck} />
 
         <Form
           form={form}
-          initialValues={{ title: memoizedItem.title }}
+          initialValues={{ title: item.title }}
           style={{
             alignItems: "center",
             display: "flex",
@@ -108,23 +107,25 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
             />
           </Form.Item>
         </Form>
-
-        {!isEditMode && (
+        {isEditMode ? (
+          <>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={handleSaveTitle}
+            >
+              <SaveFilled />
+            </Button>
+            <Button
+              style={{ backgroundColor: "#ffffff" }}
+              onClick={handleCancelEdit}
+            >
+              <CloseCircleFilled />
+            </Button>
+          </>
+        ) : (
           <Button color="primary" variant="outlined" onClick={handleEditTitle}>
             <EditFilled />
-          </Button>
-        )}
-        {isEditMode && (
-          <Button color="primary" variant="outlined" onClick={handleSaveTitle}>
-            <SaveFilled />
-          </Button>
-        )}
-        {isEditMode && (
-          <Button
-            style={{ backgroundColor: "#ffffff" }}
-            onClick={handleCancelEdit}
-          >
-            <CloseCircleFilled />
           </Button>
         )}
         <Button color="danger" variant="solid" onClick={handleDelete}>

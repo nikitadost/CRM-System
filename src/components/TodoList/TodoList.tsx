@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { List } from "antd";
 import { Todo } from "../../types/types";
 import TodoItem from "../TodoItem/TodoItem";
@@ -10,9 +10,6 @@ interface TodoListProps {
 
 const TodoList: React.FC<TodoListProps> = React.memo(
   ({ items, handleFetch }) => {
-    console.log("TodoList render");
-    const memoizedItems = useMemo(() => items, [items]);
-
     return (
       <List
         className="todos-wrap"
@@ -28,7 +25,7 @@ const TodoList: React.FC<TodoListProps> = React.memo(
           scrollbarColor: "#888 #333",
         }}
         bordered
-        dataSource={memoizedItems}
+        dataSource={items}
         renderItem={(item) => (
           <List.Item key={item.id}>
             <TodoItem item={item} handleFetch={handleFetch} />
