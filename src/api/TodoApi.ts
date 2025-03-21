@@ -1,45 +1,13 @@
-import { MetaResponse, Todo, TodoInfo, TodoStatus } from "../types/types";
+import api from "./api";
+import { TodoStatus } from "../types/types";
 
-const url = "https://easydev.club/api/v1";
-
-export const fetchEdit = async (id: number, newTitle: string) => {
+export const postTodo = async (todo: string) => {
   try {
-    const response = await fetch(`${url}/todos/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({ title: newTitle }),
+    await api.post("/todos", {
+      title: todo,
+      isDone: false,
     });
-    if (!response.ok) {
-      throw new Error("Failed to edit todo");
-    }
-  } catch (err) {
-    console.error("Failed to edit todo:", err);
-    throw err;
-  }
-};
-
-export const fetchDelete = async (id: number) => {
-  try {
-    const response = await fetch(`${url}/todos/${id}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      throw new Error("Failed to delete todo");
-    }
-  } catch (err) {
-    console.error("Failed to delete todo:", err);
-    throw err;
-  }
-};
-
-export const fetchPost = async (todo: string) => {
-  try {
-    const response = await fetch(url + "/todos", {
-      method: "POST",
-      body: JSON.stringify({ title: todo, isDone: false }),
-    });
-    if (!response.ok) {
-      throw new Error("Failed to add todo");
-    }
+    console.log("postTodo");
   } catch (err) {
     console.error("Failed to add todo:", err);
     throw err;
@@ -48,14 +16,11 @@ export const fetchPost = async (todo: string) => {
 
 export const fetchTodos = async (status: TodoStatus) => {
   try {
-    const response = await fetch(url + `/todos?filter=${status}`, {
-      method: "GET",
+    const response = await api.get("/todos", {
+      params: { filter: status },
     });
-    if (!response.ok) {
-      throw new Error("Failed to fetch todos");
-    }
-    const result: MetaResponse<Todo, TodoInfo> = await response.json();
-    return result;
+    console.log("fetch filtered by status Todos");
+    return response.data;
   } catch (err) {
     {
       console.error("Failed to fetch todos:", err);
@@ -64,21 +29,34 @@ export const fetchTodos = async (status: TodoStatus) => {
   }
 };
 
-export const fetchChecked = async (
-  event: React.ChangeEvent<HTMLInputElement>,
-  id: number
-) => {
+export const editTodo = async (id: number, newTitle: string) => {
   try {
-    const updatedIsDone = event.target.checked;
-    const response = await fetch(`${url}/todos/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({ isDone: updatedIsDone }),
+    await api.put(`/todos/${id}`, { title: newTitle });
+    console.log("editTodo");
+  } catch (err) {
+    console.error("Failed to edit todo :", err);
+    throw err;
+  }
+};
+
+export const updateTodoStatus = async (updatedIsDone: boolean, id: number) => {
+  try {
+    await api.put(`/todos/${id}`, {
+      isDone: updatedIsDone,
     });
-    if (!response.ok) {
-      throw new Error("Failed to update todo status");
-    }
+    console.log("updateTodoStatus");
   } catch (err) {
     console.error("Failed to update todo status:", err);
+    throw err;
+  }
+};
+
+export const deleteTodo = async (id: number) => {
+  try {
+    await api.delete(`/todos/${id}`);
+    console.log("deleteTodo");
+  } catch (err) {
+    console.error("Failed to delete todo:", err);
     throw err;
   }
 };

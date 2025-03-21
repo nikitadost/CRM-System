@@ -1,0 +1,81 @@
+.login-logo {
+  width: 72px;
+  height: 72px;
+}
+.login-title-container {
+  width: 367px;
+  height: 74px;
+  gap: 3px;
+}
+.login-tittle {
+  font-family: "Nunito Sans";
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 49.1px;
+  letter-spacing: 0%;
+}
+.login-subtittle {
+  font-family: "Nunito Sans";
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 21.82px;
+  letter-spacing: 0%;
+}
+.login-container {
+  width: 420px;
+  height: 376px;
+  gap: 36px;
+}
+.login-input-text {
+  font-family: "Nunito Sans";
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 19.1px;
+  letter-spacing: 0%;
+  color: #828282;
+  width: 36px;
+  height: 19px;
+}
+.login-btn-text {
+  font-family: "Nunito Sans";
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+  font-size: 18px;
+  width: 48px;
+  height: 25px;
+  line-height: 24.55px;
+  letter-spacing: 0%;
+  color: #ffffff;
+}
+.login-btn {
+  width: 420px;
+  height: 50px;
+  gap: 13px;
+  border-radius: 6px;
+  padding: 13px 10px 12px 10px;
+  background-color: #7f265b;
+}
+.illustration {
+  width: 100%;
+  height: 100vh;
+}
+@media (max-width: 1560px) {
+  .illustration {
+    content: url("../../../public/images/auth/illustrationSmall.svg");
+  }
+}
+@media (max-width: 1360px) {
+  .illustration {
+    display: none;
+  }
+}
+
+#root .auth-checkbox input {
+  background-color: #7f265b;
+  border-color: #7f265b;
+}
+#root .auth-checkbox:hover input {
+  background-color: #7f265b;
+  border-color: #7f265b;
+}
