@@ -62,7 +62,7 @@ const MainMenu: React.FC = React.memo(() => {
       setCurrent(updatedCurrentPath);
     }
   }, [updatedCurrentPath, current]);
-  console.log("MainMenu render");
+
   return (
     <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
       <div className="demo-logo-vertical" />

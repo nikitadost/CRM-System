@@ -7,7 +7,6 @@ import TodoList from "../../components/TodoList/TodoList";
 import React from "react";
 import { useLocation, useNavigate } from "react-router";
 import { Layout } from "antd";
-import MainMenu from "../../components/MainMenu/MainMenu";
 
 const TodoListPage: React.FC = React.memo(() => {
   const navigate = useNavigate();
@@ -51,20 +50,15 @@ const TodoListPage: React.FC = React.memo(() => {
     return () => clearInterval(intervalId);
   }, [handleFetch]);
 
-  console.log("TodoListPage render");
-
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <MainMenu />
-      <Layout>
-        <TodoAdd handleFetch={handleFetch} />
-        <ListSwitches
-          setFilter={updateFilter}
-          currentFilter={currentFilter as TodoStatus}
-          info={info}
-        />
-        <TodoList items={todos} handleFetch={handleFetch} />
-      </Layout>
+    <Layout>
+      <TodoAdd handleFetch={handleFetch} />
+      <ListSwitches
+        setFilter={updateFilter}
+        currentFilter={currentFilter as TodoStatus}
+        info={info}
+      />
+      <TodoList items={todos} handleFetch={handleFetch} />
     </Layout>
   );
 });
