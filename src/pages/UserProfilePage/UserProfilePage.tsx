@@ -1,22 +1,53 @@
-import { Flex, Layout } from "antd";
-import React from "react";
-import MainMenu from "../../components/MainMenu/MainMenu";
+import { Button, Flex, Layout } from "antd";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { logout } from "../../redux/AuthSlice";
+import { getUserProfile, logoutUser } from "../../api/AuthApi";
+import { Profile } from "../../types/types";
+import { clearUser, setUser } from "../../redux/UserSlice";
+import { RootState } from "../../redux/store";
 
 const UserProfilePage = React.memo(() => {
-  console.log("UserProfilePage");
+  const user = useSelector((state: RootState) => state.user.userData);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logoutUser();
+    dispatch(logout());
+    dispatch(clearUser());
+    navigate("/auth");
+  };
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const userProfile: Profile = await getUserProfile();
+      dispatch(setUser(userProfile));
+    };
+    fetchUserProfile();
+  }, [dispatch]);
+
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <MainMenu />
-      <Layout>
-        <Flex
-          align="center"
-          justify="center"
-          vertical
-          style={{ height: "100%" }}
-        >
-          <h1>Привет</h1>
-        </Flex>
-      </Layout>
+    <Layout>
+      <Flex
+        align="center"
+        justify="center"
+        vertical
+        style={{ height: "100%", gap: "20px", fontSize: "20px" }}
+      >
+        <span>
+          Имя пользователя: <br /> {user?.username}
+        </span>
+        <span>
+          Почтовый адрес: <br />
+          {user?.email}
+        </span>
+        <span>
+          Телефон: <br /> {user?.phoneNumber}
+        </span>
+        <Button onClick={handleLogout}>Logout</Button>
+      </Flex>
     </Layout>
   );
 });
