@@ -2,7 +2,7 @@ import React from "react";
 import logo from "../../../public/images/auth/logo.svg";
 import { Button, Flex, Form, Input, notification, Space } from "antd";
 import "./RegistrationPage.css";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { registerUser } from "../../api/AuthApi";
 import { AxiosError } from "axios";
 import { UserRegistration } from "../../types/types";
@@ -13,7 +13,6 @@ const close = () => {
   );
 };
 const RegistrationPage = React.memo(() => {
-  const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
   const openNotification = (
     message: string,
@@ -56,7 +55,6 @@ const RegistrationPage = React.memo(() => {
         "success",
         "You can now log in"
       );
-      navigate("/authorization");
     } catch (error) {
       if (error instanceof AxiosError) {
         openNotification(

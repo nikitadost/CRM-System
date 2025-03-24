@@ -9,8 +9,13 @@ import AuthLayout from "./components/AuthLayout/AuthLayout";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./redux/store";
 import { login, logout, setLoading } from "./redux/AuthSlice";
-import { getAccessToken, getRefreshToken } from "./api/AuthTokens";
+import {
+  getAccessToken,
+  getRefreshToken,
+  removeTokens,
+} from "./api/AuthTokens";
 import { refreshToken } from "./api/AuthApi";
+import { clearUser } from "./redux/UserSlice";
 
 const App: React.FC = React.memo(() => {
   const dispatch = useDispatch();
@@ -24,10 +29,12 @@ const App: React.FC = React.memo(() => {
       if (getAccessToken()) {
         dispatch(login());
       } else {
+        removeTokens();
         dispatch(logout());
       }
     } catch (error) {
       console.error("Ошибка обновления токена:", error);
+      removeTokens();
       dispatch(logout());
     } finally {
       dispatch(setLoading(false));
@@ -40,6 +47,17 @@ const App: React.FC = React.memo(() => {
     } else {
       dispatch(setLoading(false));
     }
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "refreshToken" && !event.newValue) {
+        removeTokens();
+        dispatch(logout());
+        dispatch(clearUser());
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, [handleRefreshToken, dispatch]);
 
   if (isLoading) {
@@ -63,11 +81,7 @@ const App: React.FC = React.memo(() => {
     },
     {
       path: "/auth",
-      element: !isAuthenticated ? (
-        <AuthLayout />
-      ) : (
-        <Navigate to="/user-profile" />
-      ),
+      element: !isAuthenticated ? <AuthLayout /> : <Navigate to="/todolist" />,
       children: [
         { index: true, element: <Navigate to="authorization" /> },
         { path: "authorization", element: <AuthorizationPage /> },

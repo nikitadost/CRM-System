@@ -2,7 +2,7 @@ import React from "react";
 import logo from "../../../public/images/auth/logo.svg";
 import { Button, Checkbox, Form, Input, Flex, notification, Space } from "antd";
 import "./AuthorizationPage.css";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { loginUser } from "../../api/AuthApi";
 import { AuthData } from "../../types/types";
 import { login } from "../../redux/AuthSlice";
@@ -23,7 +23,7 @@ interface AuthForm {
 const AuthorizationPage = React.memo(() => {
   const [api, contextHolder] = notification.useNotification();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
   const openNotification = (message: string) => {
     api.destroy();
     const key = `open${Date.now()}`;
@@ -44,7 +44,6 @@ const AuthorizationPage = React.memo(() => {
       await loginUser(authorization);
       openNotification("Successful Authorization");
       dispatch(login());
-      navigate("/user-profile");
     } catch (err) {
       console.log(err);
       openNotification("Failed to Authorization");

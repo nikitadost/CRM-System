@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getAccessToken } from "../api/AuthTokens";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -7,7 +6,7 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  isAuthenticated: !!getAccessToken(),
+  isAuthenticated: false,
   isLoading: true,
 };
 
