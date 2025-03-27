@@ -38,8 +38,8 @@ const TodoAdd: React.FC<TodoAddProps> = React.memo(({ handleFetch }) => {
         <Input placeholder="Task To Be Done..." />
       </Form.Item>
       <Form.Item>
-        <Button className="login-btn" block type="primary" htmlType="submit">
-          <span className="login-btn-text">Add</span>
+        <Button block type="primary" htmlType="submit">
+          <span>Add</span>
         </Button>
       </Form.Item>
     </Form>

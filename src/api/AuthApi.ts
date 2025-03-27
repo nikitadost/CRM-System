@@ -1,70 +1,67 @@
+import { AuthData, Profile, Token, UserRegistration } from "../types/types";
 import api from "./api";
+import { setAccessToken, setRefreshToken } from "./AuthTokens";
 
-export interface UserRegistration {
-  login: string;
-  username: string;
-  password: string;
-  email: string;
-  phoneNumber: string;
-}
-
-export interface AuthData {
-  login: string;
-  password: string;
-}
-
-export interface RefreshToken {
-  refreshToken: string;
-}
-
-export interface Profile {
-  id: number;
-  username: string;
-  email: string;
-  date: string;
-  isBlocked: boolean;
-  isAdmin: boolean;
-  phoneNumber: string;
-}
-
-export interface ProfileRequest {
-  username: string;
-  email: string;
-  phoneNumber: string;
-}
-
-export interface PasswordRequest {
-  password: string;
-}
-
-export interface Token {
-  access: string;
-  refresh: string;
-}
-
-export const fetchSignUp = async (data: UserRegistration) => {
-  console.log("Отправка данных на сервер:", data);
+export const registerUser = async (data: UserRegistration) => {
+  console.log("Отправка данных регистрации на сервер:", data);
   try {
-    const response = await api.post("/auth/signup", data);
-
+    const response = await api.post<Profile>("/auth/signup", data);
     console.log("Успешная регистрация:", response.data);
     return response.data;
   } catch (error) {
     if (error) {
       console.error("Ошибка при регистрации:", error);
     }
-
     throw error;
   }
 };
 
-export const fetchSignIn = async (data: AuthData) => {
+export const loginUser = async (data: AuthData) => {
+  console.log("Отправка данных авторизации на сервер:", data);
   try {
-    const response = await api.post("/auth/signin", data);
-    localStorage.setItem("accessToken", response.data.accessToken);
-    localStorage.setItem("refreshToken", response.data.refreshToken);
-    console.log(response);
-  } catch (err) {
-    console.error("Ошибка при авторизации:", err);
+    const response = await api.post<Token>("/auth/signin", data);
+    setRefreshToken(response.data.refreshToken);
+    setAccessToken(response.data.accessToken);
+    console.log("Успешная авторизация:", response.data);
+  } catch (error) {
+    console.error("Ошибка при авторизации:", error);
+    throw error;
+  }
+};
+
+export const logoutUser = async () => {
+  console.log("Выход из системы");
+  try {
+    const response = await api.post("/user/logout");
+    console.log("Успешный выход:", response);
+  } catch (error) {
+    console.error("Ошибка выхода", error);
+  }
+};
+
+export const getUserProfile = async () => {
+  try {
+    const response = await api.get("/user/profile");
+    console.log("Получение профиля пользователя:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при получении профиля", error);
+    throw error;
+  }
+};
+
+export const refreshToken = async (token: string) => {
+  try {
+    console.log("Обновление рефреш токеном: ", token);
+    const response = await api.post("/auth/refresh", {
+      refreshToken: token,
+    });
+    setRefreshToken(response.data.refreshToken);
+    setAccessToken(response.data.accessToken);
+    console.log("Токены обнвлены", response.data);
+    return response.data.accessToken;
+  } catch (error) {
+    console.error("Ошибка обновления токена", error);
+    throw error;
   }
 };

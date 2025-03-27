@@ -1,10 +1,13 @@
 import React from "react";
-import illustrationMedium from "/images/auth/illustrationMedium.svg";
 import logo from "../../../public/images/auth/logo.svg";
 import { Button, Checkbox, Form, Input, Flex, notification, Space } from "antd";
 import "./AuthorizationPage.css";
 import { Link } from "react-router";
-import { fetchSignIn, AuthData } from "../../api/AuthApi";
+import { loginUser } from "../../api/AuthApi";
+import { AuthData } from "../../types/types";
+import { login } from "../../redux/AuthSlice";
+import { useDispatch } from "react-redux";
+
 const close = () => {
   console.log(
     "Notification was closed. Either the close button was clicked or duration time elapsed."
@@ -18,16 +21,18 @@ interface AuthForm {
 }
 
 const AuthorizationPage = React.memo(() => {
-  console.log("AuthorizationPage render");
   const [api, contextHolder] = notification.useNotification();
-  const openNotification = () => {
+  const dispatch = useDispatch();
+
+  const openNotification = (message: string) => {
+    api.destroy();
     const key = `open${Date.now()}`;
-    const btn = <Space></Space>;
     api.open({
-      message: "Successful Authorization",
-      btn,
+      message: message,
+      actions: <Space></Space>,
       key,
       onClose: close,
+      duration: 0,
     });
   };
   const onFinish = async (value: AuthForm) => {
@@ -36,10 +41,12 @@ const AuthorizationPage = React.memo(() => {
       password: value.password,
     };
     try {
-      await fetchSignIn(authorization);
-      openNotification();
+      await loginUser(authorization);
+      openNotification("Successful Authorization");
+      dispatch(login());
     } catch (err) {
-      console.log("Не удалось авторизироваться", err);
+      console.log(err);
+      openNotification("Failed to Authorization");
     }
   };
 
@@ -47,111 +54,105 @@ const AuthorizationPage = React.memo(() => {
     <Flex
       align="center"
       justify="center"
-      style={{ height: "100%", width: "100%" }}
+      vertical
+      style={{ width: "100%", gap: "36px" }}
     >
       {contextHolder}
-      <img
-        className="illustration"
-        src={illustrationMedium}
-        alt="illustration"
-      />
-
+      <Flex
+        align="start"
+        justify="center"
+        vertical
+        style={{ height: "100%", width: "420px" }}
+      >
+        <img className="login-logo" src={logo} alt="logo" />
+      </Flex>
       <Flex
         align="center"
         justify="center"
         vertical
-        style={{ width: "100%", gap: "36px" }}
+        style={{ height: "100%", width: "100%", gap: "36px" }}
       >
-        <Flex
-          align="start"
-          justify="center"
-          vertical
-          style={{ height: "100%", width: "420px" }}
-        >
-          <img className="login-logo" src={logo} alt="logo" />
-        </Flex>
         <Flex
           align="center"
           justify="center"
           vertical
-          style={{ height: "100%", width: "100%", gap: "36px" }}
+          className="login-title-container"
         >
-          <Flex
-            align="center"
-            justify="center"
-            vertical
-            className="login-title-container"
+          <h1 className="login-tittle">Login to your Account</h1>
+          <h2 className="login-subtittle">
+            See what is going on with your business
+          </h2>
+        </Flex>
+
+        <Form
+          className="login-container"
+          name="login"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+        >
+          <span className="login-input-text">Login</span>
+          <Form.Item
+            name="login"
+            rules={[
+              { required: true, message: "Please input your Login!" },
+              {
+                pattern: /^[a-zA-Z]{2,60}$/,
+                message: "Field must contain 2-60 Latin alphabet characters.",
+              },
+            ]}
           >
-            <h1 className="login-tittle">Login to your Account</h1>
-            <h2 className="login-subtittle">
-              See what is going on with your business
-            </h2>
+            <Input
+              type="text"
+              placeholder="admin12345"
+              autoComplete="username"
+            />
+          </Form.Item>
+          <span className="login-input-text">Password</span>
+          <Form.Item
+            name="password"
+            rules={[
+              { required: true, message: "Please input your Password!" },
+
+              {
+                min: 6,
+                message: "Password should be between 6 and 60 characters.",
+              },
+              {
+                max: 60,
+                message: "Password should be between 6 and 60 characters.",
+              },
+            ]}
+          >
+            <Input
+              type="password"
+              placeholder="*****************"
+              autoComplete="current-password"
+            />
+          </Form.Item>
+
+          <Flex justify="space-between" align="center">
+            <Checkbox type="rememder" className="registration-checkbox">
+              Remember Me
+            </Checkbox>
+            <a href="">Forgot password?</a>
           </Flex>
 
-          <Form
-            className="login-container"
-            name="login"
-            initialValues={{ remember: true }}
-            onFinish={onFinish}
-          >
-            <span className="login-input-text">Login</span>
-            <Form.Item
-              name="login"
-              rules={[
-                { required: true, message: "Please input your Login!" },
-                {
-                  pattern: /^[a-zA-Z]{2,60}$/,
-                  message: "Field must contain 2-60 Latin alphabet characters.",
-                },
-              ]}
-              hasFeedback
+          <Form.Item>
+            <Button
+              className="login-btn"
+              block
+              type="primary"
+              htmlType="submit"
             >
-              <Input type="login" placeholder="admin12345" />
-            </Form.Item>
-            <span className="login-input-text">Password</span>
-            <Form.Item
-              name="password"
-              rules={[
-                { required: true, message: "Please input your Password!" },
-
-                {
-                  min: 6,
-                  message: "Password should be between 6 and 60 characters.",
-                },
-                {
-                  max: 60,
-                  message: "Password should be between 6 and 60 characters.",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input type="password" placeholder="*****************" />
-            </Form.Item>
-
-            <Flex justify="space-between" align="center">
-              <Checkbox type="rememder" className="registration-checkbox">
-                Remember Me
-              </Checkbox>
-              <a href="">Forgot password?</a>
-            </Flex>
-
-            <Form.Item>
-              <Button
-                className="login-btn"
-                block
-                type="primary"
-                htmlType="submit"
-              >
-                <span className="login-btn-text">Login</span>
-              </Button>
-            </Form.Item>
-          </Form>
-        </Flex>
-        <span style={{ flex: "center" }}>
-          Not Registered Yet?
-          <Link to="/registration">Create an account</Link>
-        </span>
+              <span className="login-btn-text">Login</span>
+            </Button>
+          </Form.Item>
+        </Form>
       </Flex>
+      <span style={{ flex: "center" }}>
+        Not Registered Yet?
+        <Link to="/auth/registration">Create an account</Link>
+      </span>
     </Flex>
   );
 });
