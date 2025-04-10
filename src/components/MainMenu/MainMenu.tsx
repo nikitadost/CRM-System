@@ -7,30 +7,33 @@ import {
 } from "@ant-design/icons";
 import { Menu, MenuProps } from "antd";
 import Sider from "antd/es/layout/Sider";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { Roles, User } from "../../types/types";
+import { getUserProfile } from "../../api/AuthApi";
+import { setUser } from "../../redux/UserSlice";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
-const items: MenuItem[] = [
-  {
-    key: "todolist",
-    label: "TodoList",
-    icon: <UnorderedListOutlined />,
-  },
-  {
-    key: "user-profile",
-    label: "User Profile",
-    icon: <ProfileOutlined />,
-  },
-  {
-    key: "users",
-    label: "Users",
-    icon: <PieChartOutlined />,
-  },
-];
-
 const MainMenu: React.FC = React.memo(() => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.user.userData);
+  const isAdmin = user?.roles.includes(Roles.ADMIN) ? true : false;
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const userProfile: User = await getUserProfile();
+        dispatch(setUser(userProfile));
+      } catch (error) {
+        console.error("Ошибка загрузки профиля пользователя:", error);
+      }
+    };
+    fetchUserProfile();
+  }, [dispatch]);
+
   const searchParams = useMemo(
     () => new URLSearchParams(location.search),
     [location.search]
@@ -76,6 +79,31 @@ const MainMenu: React.FC = React.memo(() => {
       setCurrent(updatedCurrentPath);
     }
   }, [updatedCurrentPath, current]);
+
+  const items: MenuItem[] = useMemo(
+    () => [
+      {
+        key: "todolist",
+        label: "TodoList",
+        icon: <UnorderedListOutlined />,
+      },
+      {
+        key: "user-profile",
+        label: "User Profile",
+        icon: <ProfileOutlined />,
+      },
+      ...(isAdmin
+        ? [
+            {
+              key: "users",
+              label: "Users",
+              icon: <PieChartOutlined />,
+            },
+          ]
+        : []),
+    ],
+    [isAdmin]
+  );
 
   return (
     <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>

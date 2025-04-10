@@ -14,16 +14,32 @@ import {
   getRefreshToken,
   removeTokens,
 } from "./api/AuthTokens";
-import { refreshToken } from "./api/AuthApi";
-import { clearUser } from "./redux/UserSlice";
+import { getUserProfile, refreshToken } from "./api/AuthApi";
+import { clearUser, setUser } from "./redux/UserSlice";
 import UsersPage from "./pages/UsersPage/UsersPage";
 import UserEditPage from "./pages/UserEditPage/UserEditPage";
+import { Roles, User } from "./types/types";
 
 const App: React.FC = React.memo(() => {
   const dispatch = useDispatch();
   const { isAuthenticated, isLoading } = useSelector(
     (state: RootState) => state.auth
   );
+  const user = useSelector((state: RootState) => state.user.userData);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const userProfile: User = await getUserProfile();
+        dispatch(setUser(userProfile));
+      } catch (error) {
+        console.error("Ошибка загрузки профиля пользователя:", error);
+      }
+    };
+    fetchUserProfile();
+  }, [dispatch]);
+  const isAdmin = user?.roles.includes(Roles.ADMIN) ? true : false;
+
   const handleRefreshToken = useCallback(async () => {
     dispatch(setLoading(true));
     try {
@@ -79,8 +95,14 @@ const App: React.FC = React.memo(() => {
         { path: "todolist", element: <TodoListPage /> },
         { path: "user-profile", element: <UserProfilePage /> },
 
-        { path: "users", element: <UsersPage /> },
-        { path: "users/:id", element: <UserEditPage /> },
+        {
+          path: "users",
+          element: isAdmin ? <UsersPage /> : <Navigate to="/todolist" />,
+        },
+        {
+          path: "users/:id",
+          element: isAdmin ? <UserEditPage /> : <Navigate to="/todolist" />,
+        },
         { path: "*", element: <TodoListPage /> },
       ],
     },
