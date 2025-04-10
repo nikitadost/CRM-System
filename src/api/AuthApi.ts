@@ -1,11 +1,11 @@
-import { AuthData, Profile, Token, UserRegistration } from "../types/types";
+import { AuthData, User, Token, UserRegistration } from "../types/types";
 import api from "./api";
 import { setAccessToken, setRefreshToken } from "./AuthTokens";
 
 export const registerUser = async (data: UserRegistration) => {
   console.log("Отправка данных регистрации на сервер:", data);
   try {
-    const response = await api.post<Profile>("/auth/signup", data);
+    const response = await api.post<User>("/auth/signup", data);
     console.log("Успешная регистрация:", response.data);
     return response.data;
   } catch (error) {

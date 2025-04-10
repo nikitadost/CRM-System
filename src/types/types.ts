@@ -40,14 +40,30 @@ export interface AuthData {
 export interface RefreshToken {
   refreshToken: string;
 }
-export interface Profile {
+// export interface Profile {
+//   id: number;
+//   username: string;
+//   email: string;
+//   date: string;
+//   isBlocked: boolean;
+//   isAdmin: boolean;
+//   phoneNumber: string;
+// }
+
+export interface User {
   id: number;
   username: string;
   email: string;
-  date: string;
+  date: string; // ISO date string
   isBlocked: boolean;
-  isAdmin: boolean;
+  roles: Roles[];
   phoneNumber: string;
+}
+
+export enum Roles {
+  ADMIN = "ADMIN",
+  MODERATOR = "MODERATOR",
+  USER = "USER",
 }
 export interface ProfileRequest {
   username: string;

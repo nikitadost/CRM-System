@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { logout } from "../../redux/AuthSlice";
 import { getUserProfile, logoutUser } from "../../api/AuthApi";
-import { Profile } from "../../types/types";
+import { User } from "../../types/types";
 import { clearUser, setUser } from "../../redux/UserSlice";
 import { RootState } from "../../redux/store";
 
@@ -22,7 +22,7 @@ const UserProfilePage = React.memo(() => {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      const userProfile: Profile = await getUserProfile();
+      const userProfile: User = await getUserProfile();
       dispatch(setUser(userProfile));
     };
     fetchUserProfile();

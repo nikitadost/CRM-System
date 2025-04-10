@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { UnorderedListOutlined, ProfileOutlined } from "@ant-design/icons";
+import {
+  UnorderedListOutlined,
+  ProfileOutlined,
+  PieChartOutlined,
+} from "@ant-design/icons";
 import { Menu, MenuProps } from "antd";
 import Sider from "antd/es/layout/Sider";
 
@@ -16,6 +20,11 @@ const items: MenuItem[] = [
     key: "user-profile",
     label: "User Profile",
     icon: <ProfileOutlined />,
+  },
+  {
+    key: "users",
+    label: "Users",
+    icon: <PieChartOutlined />,
   },
 ];
 
@@ -48,7 +57,12 @@ const MainMenu: React.FC = React.memo(() => {
             }
             navigate(`/todolist?${searchParams.toString()}`);
           } else {
-            navigate(`/user-profile?filter=${currentFilter}`);
+            if (key === "user-profile") {
+              navigate(`/user-profile?filter=${currentFilter}`);
+            }
+            if (key === "users") {
+              navigate(`/users?filter=${currentFilter}`);
+            }
           }
         }
         return key;

@@ -16,6 +16,8 @@ import {
 } from "./api/AuthTokens";
 import { refreshToken } from "./api/AuthApi";
 import { clearUser } from "./redux/UserSlice";
+import UsersPage from "./pages/UsersPage/UsersPage";
+import UserEditPage from "./pages/UserEditPage/UserEditPage";
 
 const App: React.FC = React.memo(() => {
   const dispatch = useDispatch();
@@ -76,6 +78,9 @@ const App: React.FC = React.memo(() => {
         { index: true, element: <Navigate to="todolist" /> },
         { path: "todolist", element: <TodoListPage /> },
         { path: "user-profile", element: <UserProfilePage /> },
+
+        { path: "users", element: <UsersPage /> },
+        { path: "users/:id", element: <UserEditPage /> },
         { path: "*", element: <TodoListPage /> },
       ],
     },

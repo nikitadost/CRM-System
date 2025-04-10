@@ -6,6 +6,7 @@ const MainLayout = () => {
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <MainMenu />
+
       <Outlet />
     </Layout>
   );
