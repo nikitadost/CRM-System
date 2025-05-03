@@ -146,8 +146,9 @@ export const unblockUserByAdmin = async (id: number) => {
 
 export const updateUserRolesByAdmin = async (id: number, roles: Roles[]) => {
   try {
+    console.log(roles);
     const response = await api.post(`/admin/users/${id}/rights`, {
-      params: { id: id, roles: roles },
+      roles: roles,
     });
     console.log(`Роли пользователя успешно обновлены ${id}:`, response);
     return response;

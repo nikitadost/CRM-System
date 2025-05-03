@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   Flex,
   GetProps,
   Input,
@@ -10,13 +11,14 @@ import {
   TableColumnsType,
   TableProps,
 } from "antd";
-import { User } from "../../types/types";
+import { Roles, User } from "../../types/types";
 import { useEffect, useState } from "react";
 import {
   blockUserByAdmin,
   getUsersByAdmin,
   removeUserByAdmin,
   unblockUserByAdmin,
+  updateUserRolesByAdmin,
   UserFilters,
 } from "../../api/UsersApi";
 import {
@@ -30,7 +32,7 @@ import { SorterResult } from "antd/es/table/interface";
 import { useNavigate } from "react-router";
 import Search from "antd/es/input/Search";
 type SearchProps = GetProps<typeof Input.Search>;
-type ActionType = "delete" | "block" | "unblock";
+type ActionType = "delete" | "block" | "unblock" | "rights";
 const UsersPage: React.FC = () => {
   const navigate = useNavigate();
   const [dataSource, setDataSource] = useState<User[]>([]);
@@ -48,7 +50,7 @@ const UsersPage: React.FC = () => {
   const [modalFunction, setModalFunction] = useState<() => Promise<void>>();
   const [modalData, setModalData] = useState<User>();
   const [actionType, setActionType] = useState<ActionType>("delete");
-
+  const [selectedRoles, setSelectedRoles] = useState<Roles[]>([]);
   const showModal = (
     user: User,
     actionFunction: () => Promise<void>,
@@ -62,10 +64,18 @@ const UsersPage: React.FC = () => {
   };
 
   const handleOk = async () => {
-    if (modalFunction) {
-      await modalFunction();
+    try {
+      if (actionType === "rights" && modalData) {
+        console.log(selectedRoles);
+        await updateUserRolesByAdmin(modalData.id, selectedRoles);
+        fetchUsers(filter);
+      } else if (modalFunction) {
+        await modalFunction();
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Ошибка при выполнении действия:", error);
     }
-    setIsModalOpen(false);
   };
 
   const handleCancel = () => {
@@ -80,6 +90,8 @@ const UsersPage: React.FC = () => {
         return `Are you sure you want to block the user: ${modalData?.username}?`;
       case "unblock":
         return `Are you sure you want to unblock the user: ${modalData?.username}?`;
+      case "rights":
+        return `Choise rights for the user: ${modalData?.username}`;
       default:
         return "";
     }
@@ -194,6 +206,7 @@ const UsersPage: React.FC = () => {
       key: "isBlocked",
       title: "Blocked",
       dataIndex: "isBlocked",
+      filterMultiple: false,
       filters: [
         { text: "All users", value: "all" },
         { text: "Blocked users", value: "blocked" },
@@ -249,7 +262,15 @@ const UsersPage: React.FC = () => {
               <LockOutlined style={{ color: "red" }} />
             </Button>
           )}
-          <Button>
+          <Button
+            onClick={() => {
+              setSelectedRoles(record.roles);
+              setModalData(record);
+              setActionType("rights");
+              setIsModalOpen(true);
+              setModalFunction(undefined);
+            }}
+          >
             <UserAddOutlined style={{ color: "green" }} />
           </Button>
         </Space>
@@ -290,6 +311,17 @@ const UsersPage: React.FC = () => {
         onCancel={handleCancel}
       >
         <p>{getModalText(actionType)}</p>
+        {actionType === "rights" ? (
+          <Checkbox.Group
+            options={[Roles.USER, Roles.MODERATOR, Roles.ADMIN]}
+            value={selectedRoles}
+            onChange={(checkedValues) =>
+              setSelectedRoles(checkedValues as Roles[])
+            }
+          />
+        ) : (
+          ""
+        )}
       </Modal>
     </Layout>
   );
