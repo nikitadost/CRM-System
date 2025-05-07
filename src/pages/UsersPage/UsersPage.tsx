@@ -47,6 +47,7 @@ const UsersPage: React.FC = () => {
     search: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [modalFunction, setModalFunction] = useState<() => Promise<void>>();
   const [modalData, setModalData] = useState<User>();
   const [actionType, setActionType] = useState<ActionType>("delete");
@@ -66,9 +67,7 @@ const UsersPage: React.FC = () => {
   const handleOk = async () => {
     try {
       if (actionType === "rights" && modalData) {
-        console.log(selectedRoles);
-        await updateUserRolesByAdmin(modalData.id, selectedRoles);
-        fetchUsers(filter);
+        setIsConfirmModalOpen(true);
       } else if (modalFunction) {
         await modalFunction();
       }
@@ -80,6 +79,23 @@ const UsersPage: React.FC = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  const handleConfirmOk = async () => {
+    if (modalData) {
+      try {
+        await updateUserRolesByAdmin(modalData.id, selectedRoles);
+        await fetchUsers(filter);
+        setIsConfirmModalOpen(false);
+        setIsModalOpen(false);
+      } catch (error) {
+        console.error("Ошибка при обновлении ролей:", error);
+      }
+    }
+  };
+
+  const handleConfirmCancel = () => {
+    setIsConfirmModalOpen(false);
   };
 
   const getModalText = (action: ActionType) => {
@@ -322,6 +338,20 @@ const UsersPage: React.FC = () => {
         ) : (
           ""
         )}
+      </Modal>
+      <Modal
+        title="Подтвердите изменение ролей"
+        open={isConfirmModalOpen}
+        onOk={handleConfirmOk}
+        onCancel={handleConfirmCancel}
+        okText="Да"
+        cancelText="Нет"
+      >
+        <p>
+          Are you sure you want to assign the following roles to the user
+          <b>{modalData?.username}</b>?
+        </p>
+        <p>Роли: {selectedRoles.join(", ")}</p>
       </Modal>
     </Layout>
   );
