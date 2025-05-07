@@ -340,12 +340,12 @@ const UsersPage: React.FC = () => {
         )}
       </Modal>
       <Modal
-        title="Подтвердите изменение ролей"
+        title="Confirm role change"
         open={isConfirmModalOpen}
         onOk={handleConfirmOk}
         onCancel={handleConfirmCancel}
-        okText="Да"
-        cancelText="Нет"
+        okText="Yes"
+        cancelText="No"
       >
         <p>
           Are you sure you want to assign the following roles to the user
