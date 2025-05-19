@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  getUserProfileByAdmin,
-  updateUserProfileByAdmin,
-} from "../../api/UsersApi";
+import { getUserProfile, updateUserProfile } from "../../api/UsersApi";
 import { User } from "../../types/types";
 import { Form, Input, Button, Spin, Flex, Layout } from "antd";
 import { useNavigate, useParams } from "react-router";
@@ -18,7 +15,7 @@ const UserEditPage: React.FC = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const data = await getUserProfileByAdmin(Number(id));
+        const data = await getUserProfile(Number(id));
         console.log(data);
         setUser(data);
       } catch (error) {
@@ -46,7 +43,7 @@ const UserEditPage: React.FC = () => {
           return acc;
         }, {} as Partial<User>);
         if (Object.keys(changedValues).length > 0) {
-          const res = await updateUserProfileByAdmin(user.id, changedValues);
+          const res = await updateUserProfile(user.id, changedValues);
           if (res) {
             setUser(res);
           } else {

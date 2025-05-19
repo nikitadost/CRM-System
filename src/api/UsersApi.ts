@@ -1,56 +1,7 @@
+import { Roles, UserFilters, UserRequest } from "../types/types";
 import api from "./api";
 
-// Интерфейс запроса для фильтрации и сортировки пользователей
-export interface UserFilters {
-  search?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-  isBlocked?: boolean;
-  limit?: number; // сколько на странице
-  offset?: number; // страницу
-}
-
-// Интерфейс пользователя
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  date: string; // ISO date string
-  isBlocked: boolean;
-  roles: Roles[];
-  phoneNumber: string;
-}
-// Интерфейс метаинформации
-
-export interface MetaResponse<T> {
-  data: T[];
-  meta: {
-    totalAmount: number;
-    sortBy: string;
-    sortOrder: "asc" | "desc";
-  };
-}
-// Интерфейс для обновления прав пользователя
-export interface UserRolesRequest {
-  roles: Roles[]; // при вызове этой апи роли будут обновлены к тому массиву который будет передан
-  // например если у вас была roles: ['ADMIN'] а вы хотите добавить ['MODERATOR'] то нужно передавать
-  // старые + новые - roles: ['ADMIN', 'MODERATOR']
-}
-
-// Интерфейс для обновления данных пользователя
-export interface UserRequest {
-  username?: string;
-  email?: string;
-  phoneNumber?: string;
-}
-
-export enum Roles {
-  ADMIN = "ADMIN",
-  MODERATOR = "MODERATOR",
-  USER = "USER",
-}
-
-export const getUsersByAdmin = async (filter: UserFilters) => {
+export const getUsers = async (filter: UserFilters) => {
   try {
     const response = await api.get("/admin/users", {
       params: filter,
@@ -62,7 +13,7 @@ export const getUsersByAdmin = async (filter: UserFilters) => {
   }
 };
 
-export const getUserProfileByAdmin = async (id: number) => {
+export const getUserProfile = async (id: number) => {
   try {
     const response = await api.get(`/admin/users/${id}`, {
       params: { id: id },
@@ -77,10 +28,7 @@ export const getUserProfileByAdmin = async (id: number) => {
   }
 };
 
-export const updateUserProfileByAdmin = async (
-  id: number,
-  data: UserRequest
-) => {
+export const updateUserProfile = async (id: number, data: UserRequest) => {
   console.log("data", data);
   try {
     const response = await api.put(`/admin/users/${id}`, {
@@ -99,7 +47,7 @@ export const updateUserProfileByAdmin = async (
   }
 };
 
-export const removeUserByAdmin = async (id: number) => {
+export const removeUser = async (id: number) => {
   try {
     const response = await api.delete(`/admin/users/${id}`, {
       params: { id: id },
@@ -114,7 +62,7 @@ export const removeUserByAdmin = async (id: number) => {
   }
 };
 
-export const blockUserByAdmin = async (id: number) => {
+export const blockUser = async (id: number) => {
   try {
     const response = await api.post(`/admin/users/${id}/block`, {
       params: { id: id },
@@ -126,7 +74,7 @@ export const blockUserByAdmin = async (id: number) => {
   }
 };
 
-export const unblockUserByAdmin = async (id: number) => {
+export const unblockUser = async (id: number) => {
   try {
     const response = await api.post(`/admin/users/${id}/unblock`, {
       params: { id: id },
@@ -144,7 +92,7 @@ export const unblockUserByAdmin = async (id: number) => {
   }
 };
 
-export const updateUserRolesByAdmin = async (id: number, roles: Roles[]) => {
+export const updateUserRoles = async (id: number, roles: Roles[]) => {
   try {
     console.log(roles);
     const response = await api.post(`/admin/users/${id}/rights`, {

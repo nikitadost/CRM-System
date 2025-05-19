@@ -11,15 +11,14 @@ import {
   TableColumnsType,
   TableProps,
 } from "antd";
-import { Roles, User } from "../../types/types";
+import { Roles, User, UserFilters } from "../../types/types";
 import { useEffect, useState } from "react";
 import {
-  blockUserByAdmin,
-  getUsersByAdmin,
-  removeUserByAdmin,
-  unblockUserByAdmin,
-  updateUserRolesByAdmin,
-  UserFilters,
+  blockUser,
+  getUsers,
+  removeUser,
+  unblockUser,
+  updateUserRoles,
 } from "../../api/UsersApi";
 import {
   LockOutlined,
@@ -84,7 +83,7 @@ const UsersPage: React.FC = () => {
   const handleConfirmOk = async () => {
     if (modalData) {
       try {
-        await updateUserRolesByAdmin(modalData.id, selectedRoles);
+        await updateUserRoles(modalData.id, selectedRoles);
         await fetchUsers(filter);
         setIsConfirmModalOpen(false);
         setIsModalOpen(false);
@@ -123,7 +122,7 @@ const UsersPage: React.FC = () => {
   const fetchUsers = async (filters: UserFilters) => {
     setLoading(true);
     try {
-      const response = await getUsersByAdmin(filters);
+      const response = await getUsers(filters);
       if (response && response.data) {
         setDataSource(response.data.data);
         setTotal(response.data.meta.totalAmount);
@@ -140,15 +139,15 @@ const UsersPage: React.FC = () => {
   }, [filter]);
 
   const handleRemoveUser = async (id: number) => {
-    await removeUserByAdmin(id);
+    await removeUser(id);
     fetchUsers(filter);
   };
   const handleBlockUser = async (id: number) => {
-    await blockUserByAdmin(id);
+    await blockUser(id);
     fetchUsers(filter);
   };
   const handleUnblockUser = async (id: number) => {
-    await unblockUserByAdmin(id);
+    await unblockUser(id);
     fetchUsers(filter);
   };
 

@@ -1,6 +1,8 @@
 import { AuthData, User, Token, UserRegistration } from "../types/types";
 import api from "./api";
-import { setAccessToken, setRefreshToken } from "./AuthTokens";
+import AuthTokens from "./AuthTokens";
+
+const tokens = AuthTokens.getInstance();
 
 export const registerUser = async (data: UserRegistration) => {
   console.log("Отправка данных регистрации на сервер:", data);
@@ -20,8 +22,8 @@ export const loginUser = async (data: AuthData) => {
   console.log("Отправка данных авторизации на сервер:", data);
   try {
     const response = await api.post<Token>("/auth/signin", data);
-    setRefreshToken(response.data.refreshToken);
-    setAccessToken(response.data.accessToken);
+    tokens.setRefreshToken(response.data.refreshToken);
+    tokens.setAccessToken(response.data.accessToken);
     console.log("Успешная авторизация:", response.data);
   } catch (error) {
     console.error("Ошибка при авторизации:", error);
@@ -56,8 +58,8 @@ export const refreshToken = async (token: string) => {
     const response = await api.post("/auth/refresh", {
       refreshToken: token,
     });
-    setRefreshToken(response.data.refreshToken);
-    setAccessToken(response.data.accessToken);
+    tokens.setRefreshToken(response.data.refreshToken);
+    tokens.setAccessToken(response.data.accessToken);
     console.log("Токены обнвлены", response.data);
     return response.data.accessToken;
   } catch (error) {

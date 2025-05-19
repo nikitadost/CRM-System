@@ -1,6 +1,6 @@
 import axios from "axios";
 import { refreshToken } from "../api/AuthApi";
-import { getAccessToken, getRefreshToken, removeTokens } from "./AuthTokens";
+import AuthTokens from "./AuthTokens";
 import { store } from "../redux/store";
 import { logout } from "../redux/AuthSlice";
 
@@ -13,9 +13,11 @@ const api = axios.create({
   withCredentials: true,
 });
 
+const tokens = AuthTokens.getInstance();
+
 api.interceptors.request.use(
   async (config) => {
-    const accessToken = getAccessToken();
+    const accessToken = tokens.getAccessToken();
     if (accessToken && config.headers) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
@@ -49,7 +51,7 @@ api.interceptors.response.use(
         const errorMessage = error.response.data || "";
         if (errorMessage.includes("expired")) {
           console.warn(" Токен истёк, выполняем logout...");
-          removeTokens();
+          tokens.removeTokens();
           store.dispatch(logout());
           return Promise.reject(new Error("Сессия истекла, выполнен logout"));
         }
@@ -65,15 +67,15 @@ api.interceptors.response.use(
         isRefreshing = true;
 
         try {
-          await refreshToken(getRefreshToken());
+          await refreshToken(tokens.getRefreshToken());
           api.defaults.headers.common[
             "Authorization"
-          ] = `Bearer ${getAccessToken()}`;
-          onRefreshed(getAccessToken());
+          ] = `Bearer ${tokens.getAccessToken()}`;
+          onRefreshed(tokens.getAccessToken());
           return api(originalRequest);
         } catch (refreshError) {
           console.error("Ошибка обновления токена: ", refreshError);
-          removeTokens();
+          tokens.removeTokens();
           store.dispatch(logout());
           return Promise.reject(
             new Error("Не удалось обновить токен, выполнен logout")
