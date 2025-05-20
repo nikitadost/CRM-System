@@ -8,7 +8,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router";
 import { Layout } from "antd";
 
-const TodoListPage: React.FC = React.memo(() => {
+const TodoListPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -61,6 +61,6 @@ const TodoListPage: React.FC = React.memo(() => {
       <TodoList items={todos} handleFetch={handleFetch} />
     </Layout>
   );
-});
+};
 
 export default TodoListPage;

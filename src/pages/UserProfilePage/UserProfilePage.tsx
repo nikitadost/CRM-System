@@ -8,7 +8,7 @@ import { User } from "../../types/types";
 import { clearUser, setUser } from "../../redux/UserSlice";
 import { RootState } from "../../redux/store";
 
-const UserProfilePage = React.memo(() => {
+const UserProfilePage = () => {
   const user = useSelector((state: RootState) => state.user.userData);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -50,6 +50,6 @@ const UserProfilePage = React.memo(() => {
       </Flex>
     </Layout>
   );
-});
+};
 
 export default UserProfilePage;

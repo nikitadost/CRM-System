@@ -7,6 +7,7 @@ import { loginUser } from "../../api/AuthApi";
 import { AuthData } from "../../types/types";
 import { login } from "../../redux/AuthSlice";
 import { useDispatch } from "react-redux";
+import { loginRules, passwordRules } from "../../utils/validationRules";
 
 const close = () => {
   console.log(
@@ -20,7 +21,7 @@ interface AuthForm {
   remember: boolean;
 }
 
-const AuthorizationPage = React.memo(() => {
+const AuthorizationPage = () => {
   const [api, contextHolder] = notification.useNotification();
   const dispatch = useDispatch();
 
@@ -91,17 +92,7 @@ const AuthorizationPage = React.memo(() => {
           onFinish={onFinish}
         >
           <span className="login-input-text">Логин</span>
-          <Form.Item
-            name="login"
-            rules={[
-              { required: true, message: "Пожалуйста, введите ваш логин!" },
-              {
-                pattern: /^[a-zA-Z]{2,60}$/,
-                message:
-                  "Поле должно содержать от 2 до 60 символов латинского алфавита.",
-              },
-            ]}
-          >
+          <Form.Item name="login" rules={loginRules}>
             <Input
               type="text"
               placeholder="admin12345"
@@ -109,21 +100,7 @@ const AuthorizationPage = React.memo(() => {
             />
           </Form.Item>
           <span className="login-input-text">Пароль</span>
-          <Form.Item
-            name="password"
-            rules={[
-              { required: true, message: "Введите пароль!" },
-
-              {
-                min: 6,
-                message: "Пароль должен содержать от 6 до 60 символов.",
-              },
-              {
-                max: 60,
-                message: "Пароль должен содержать от 6 до 60 символов.",
-              },
-            ]}
-          >
+          <Form.Item name="password" rules={passwordRules}>
             <Input
               type="password"
               placeholder="*****************"
@@ -156,6 +133,6 @@ const AuthorizationPage = React.memo(() => {
       </span>
     </Flex>
   );
-});
+};
 
 export default AuthorizationPage;

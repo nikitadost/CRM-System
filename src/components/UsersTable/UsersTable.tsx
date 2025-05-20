@@ -9,7 +9,9 @@ import {
   UnlockOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router";
-import { User, ModalActionType } from "../../types/types";
+import { User, ModalActionType, Roles } from "../../types/types";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 interface UsersTableProps {
   dataSource: User[];
@@ -29,6 +31,8 @@ const UsersTable: React.FC<UsersTableProps> = ({
   onAction,
 }) => {
   const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.user.userData);
+  const isAdmin = user?.roles?.includes(Roles.ADMIN) ?? false;
 
   const columns: TableColumnsType<User> = [
     {
@@ -82,9 +86,11 @@ const UsersTable: React.FC<UsersTableProps> = ({
             <EditFilled />
           </Button>
 
-          <Button danger onClick={() => onAction(record, "delete")}>
-            <DeleteFilled />
-          </Button>
+          {isAdmin && (
+            <Button danger onClick={() => onAction(record, "delete")}>
+              <DeleteFilled />
+            </Button>
+          )}
 
           {record.isBlocked ? (
             <Button onClick={() => onAction(record, "unblock")}>
@@ -95,9 +101,11 @@ const UsersTable: React.FC<UsersTableProps> = ({
               <LockOutlined style={{ color: "red" }} />
             </Button>
           )}
-          <Button onClick={() => onAction(record, "rights")}>
-            <UserAddOutlined style={{ color: "green" }} />
-          </Button>
+          {isAdmin && (
+            <Button onClick={() => onAction(record, "rights")}>
+              <UserAddOutlined style={{ color: "green" }} />
+            </Button>
+          )}
         </Space>
       ),
     },

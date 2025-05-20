@@ -1,4 +1,3 @@
-import React from "react";
 import logo from "../../../public/images/auth/logo.svg";
 import { Button, Flex, Form, Input, notification, Space } from "antd";
 import "./RegistrationPage.css";
@@ -6,14 +5,23 @@ import { Link } from "react-router";
 import { registerUser } from "../../api/AuthApi";
 import { AxiosError } from "axios";
 import { UserRegistration } from "../../types/types";
+import {
+  confirmPasswordRules,
+  emailRules,
+  loginRules,
+  passwordRules,
+  phoneNumberRules,
+  usernameRules,
+} from "../../utils/validationRules";
 
 const close = () => {
   console.log(
     "Уведомление было закрыто. Либо была нажата кнопка закрытия, либо истекло время действия."
   );
 };
-const RegistrationPage = React.memo(() => {
+const RegistrationPage = () => {
   const [api, contextHolder] = notification.useNotification();
+  const [form] = Form.useForm();
   const openNotification = (
     message: string,
     type: string,
@@ -102,39 +110,19 @@ const RegistrationPage = React.memo(() => {
         </Flex>
 
         <Form
+          form={form}
           className="registration-container"
           name="registration"
           initialValues={{ remember: true }}
           onFinish={onFinish}
         >
           <span className="registration-input-text">Почта</span>
-          <Form.Item
-            name="email"
-            rules={[
-              {
-                required: true,
-                message: "Пожалуйста, введите свой адрес электронной почты!",
-              },
-              {
-                type: "email",
-              },
-            ]}
-          >
+          <Form.Item name="email" rules={emailRules}>
             <Input placeholder="abc@mail.ru" />
           </Form.Item>
 
           <span className="registration-input-text">Логин</span>
-          <Form.Item
-            name="login"
-            rules={[
-              { required: true, message: "Пожалуйста, введите ваш логин!" },
-              {
-                pattern: /^[a-zA-Z]{2,60}$/,
-                message:
-                  "Поле должно содержать от 2 до 60 символов латинского алфавита.",
-              },
-            ]}
-          >
+          <Form.Item name="login" rules={loginRules}>
             <Input
               type="text"
               placeholder="admin12345"
@@ -143,22 +131,8 @@ const RegistrationPage = React.memo(() => {
           </Form.Item>
 
           <span className="login-input-text">Пароль</span>
-          <Form.Item
-            name="password"
-            rules={[
-              { required: true, message: "Введите пароль!" },
-
-              {
-                min: 6,
-                message: "Пароль должен содержать от 6 до 60 символов.",
-              },
-              {
-                max: 60,
-                message: "Пароль должен содержать от 6 до 60 символов.",
-              },
-            ]}
-          >
-            <Input
+          <Form.Item name="password" rules={passwordRules}>
+            <Input.Password
               type="password"
               placeholder="*****************"
               autoComplete="new-password"
@@ -168,67 +142,20 @@ const RegistrationPage = React.memo(() => {
           <Form.Item
             name="confirmPassword"
             dependencies={["password"]}
-            rules={[
-              { required: true, message: "Введите пароль!" },
-
-              {
-                min: 6,
-                message: "Пароль должен содержать от 6 до 60 символов.",
-              },
-              {
-                max: 60,
-                message: "Пароль должен содержать от 6 до 60 символов.",
-              },
-
-              ({ getFieldValue }) => ({
-                validator() {
-                  if (
-                    getFieldValue("confirmPassword") ===
-                    getFieldValue("password")
-                  ) {
-                    return Promise.resolve();
-                  } else {
-                    return Promise.reject(new Error("Пароли не совпадают!"));
-                  }
-                },
-              }),
-            ]}
+            rules={confirmPasswordRules(form.getFieldValue)}
           >
-            <Input
+            <Input.Password
               type="password"
               placeholder="*****************"
               autoComplete="new-password"
             />
           </Form.Item>
           <span className="registration-input-text">Номер телефона</span>
-          <Form.Item
-            name="phoneNumber"
-            rules={[
-              { required: false },
-              {
-                pattern: /^\+\d{1,15}$/,
-                message:
-                  "Введите действительный формат номера телефона (+79123456789).",
-              },
-            ]}
-          >
+          <Form.Item name="phoneNumber" rules={phoneNumberRules}>
             <Input type="phoneNumber" placeholder="+79123456789" />
           </Form.Item>
           <span className="registration-input-text">Имя пользователя</span>
-          <Form.Item
-            name="username"
-            rules={[
-              {
-                required: true,
-                message: "Пожалуйста, введите Ваше имя пользователя!",
-              },
-              {
-                pattern: /^[a-zA-Zа-яА-Я]{1,60}$/,
-                message:
-                  "Поле должно содержать от 1 до 60 символов латинского или кириллического алфавита.",
-              },
-            ]}
-          >
+          <Form.Item name="username" rules={usernameRules}>
             <Input type="username" placeholder="Иван Иванов" />
           </Form.Item>
 
@@ -250,6 +177,6 @@ const RegistrationPage = React.memo(() => {
       </Flex>
     </Flex>
   );
-});
+};
 
 export default RegistrationPage;

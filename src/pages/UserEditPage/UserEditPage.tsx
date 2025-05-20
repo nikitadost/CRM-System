@@ -3,6 +3,11 @@ import { getUserProfile, updateUserProfile } from "../../api/UsersApi";
 import { User } from "../../types/types";
 import { Form, Input, Button, Spin, Flex, Layout } from "antd";
 import { useNavigate, useParams } from "react-router";
+import {
+  emailRules,
+  phoneNumberRules,
+  usernameRules,
+} from "../../utils/validationRules";
 
 const UserEditPage: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
@@ -14,6 +19,11 @@ const UserEditPage: React.FC = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (!id || isNaN(Number(id))) {
+        console.error("Некорректный или отсутствующий ID пользователя");
+        navigate("/users");
+        return;
+      }
       try {
         const data = await getUserProfile(Number(id));
         console.log(data);
@@ -25,7 +35,7 @@ const UserEditPage: React.FC = () => {
       }
     };
     fetchUser();
-  }, [id]);
+  }, [id, navigate]);
 
   const handleSaveUser = async () => {
     if (user) {
@@ -98,46 +108,17 @@ const UserEditPage: React.FC = () => {
           <Form.Item
             label="Имя пользователя"
             name="username"
-            rules={[
-              {
-                required: true,
-                message: "Пожалуйста, введите Ваше имя пользователя!",
-              },
-              {
-                pattern: /^[a-zA-Zа-яА-Я]{1,60}$/,
-                message:
-                  "Поле должно содержать от 1 до 60 символов латинского или кириллического алфавита.",
-              },
-            ]}
+            rules={usernameRules}
           >
             <Input disabled={!isEditMode} value={user?.username} />
           </Form.Item>
-          <Form.Item
-            label="Почта"
-            name="email"
-            rules={[
-              {
-                required: true,
-                message: "Пожалуйста, введите свой адрес электронной почты!",
-              },
-              {
-                type: "email",
-              },
-            ]}
-          >
+          <Form.Item label="Почта" name="email" rules={emailRules}>
             <Input disabled={!isEditMode} value={user?.email} />
           </Form.Item>
           <Form.Item
             label="Номер телефона"
             name="phoneNumber"
-            rules={[
-              { required: false },
-              {
-                pattern: /^\+\d{1,15}$/,
-                message:
-                  "Введите действительный формат номера телефона (+79123456789).",
-              },
-            ]}
+            rules={phoneNumberRules}
           >
             <Input disabled={!isEditMode} value={user?.phoneNumber} />
           </Form.Item>
