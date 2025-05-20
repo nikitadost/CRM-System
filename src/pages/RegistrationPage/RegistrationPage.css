@@ -13,6 +13,7 @@
   font-size: 36px;
   line-height: 49.1px;
   letter-spacing: 0%;
+  text-align: center;
 }
 .registration-subtittle {
   font-family: "Nunito Sans";
@@ -42,11 +43,10 @@
   font-weight: 800;
   font-style: normal;
   font-size: 18px;
-  width: 48px;
-  height: 25px;
   line-height: 24.55px;
   letter-spacing: 0%;
   color: #ffffff;
+  text-align: center;
 }
 .registration-btn {
   width: 420px;

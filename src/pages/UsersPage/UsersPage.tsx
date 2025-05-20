@@ -100,13 +100,13 @@ const UsersPage: React.FC = () => {
   const getModalText = (action: ActionType) => {
     switch (action) {
       case "delete":
-        return `Are you sure you want to delete the user: ${modalData?.username}?`;
+        return `Вы уверены, что хотите удалить пользователя: ${modalData?.username}?`;
       case "block":
-        return `Are you sure you want to block the user: ${modalData?.username}?`;
+        return `Вы уверены, что хотите заблокировать пользователя: ${modalData?.username}?`;
       case "unblock":
-        return `Are you sure you want to unblock the user: ${modalData?.username}?`;
+        return `Вы уверены, что хотите разблокировать пользователя: ${modalData?.username}?`;
       case "rights":
-        return `Choise rights for the user: ${modalData?.username}`;
+        return `Выберите права пользователю: ${modalData?.username}`;
       default:
         return "";
     }
@@ -202,11 +202,16 @@ const UsersPage: React.FC = () => {
   };
 
   const columns: TableColumnsType<User> = [
-    { key: "username", title: "Username", dataIndex: "username", sorter: true },
-    { key: "email", title: "Email", dataIndex: "email", sorter: true },
+    {
+      key: "username",
+      title: "Имя пользователя",
+      dataIndex: "username",
+      sorter: true,
+    },
+    { key: "email", title: "Почта", dataIndex: "email", sorter: true },
     {
       key: "date",
-      title: "Registration Date",
+      title: "Дата регистрации",
       dataIndex: "date",
       render: (date: string) => {
         const dateObj = new Date(date);
@@ -219,7 +224,7 @@ const UsersPage: React.FC = () => {
     },
     {
       key: "isBlocked",
-      title: "Blocked",
+      title: "Заблокирован",
       dataIndex: "isBlocked",
       filterMultiple: false,
       filters: [
@@ -228,16 +233,16 @@ const UsersPage: React.FC = () => {
         { text: "Active users", value: "active" },
       ],
       render: (isBlocked: boolean) => {
-        return <p>{isBlocked ? "Yes" : "No"}</p>;
+        return <p>{isBlocked ? "Да" : "Нет"}</p>;
       },
     },
     {
       key: "roles",
-      title: "Roles",
+      title: "Роли",
       dataIndex: "roles",
       render: (roles: string[]) => roles?.join(", "),
     },
-    { key: "phoneNumber", title: "Phone Number", dataIndex: "phoneNumber" },
+    { key: "phoneNumber", title: "Номер телефона", dataIndex: "phoneNumber" },
     {
       title: "",
       key: "actions",
@@ -302,7 +307,7 @@ const UsersPage: React.FC = () => {
         style={{ height: "100%", gap: "20px", fontSize: "20px" }}
       >
         <Search
-          placeholder="input search text"
+          placeholder="Введите текст для поиска"
           onSearch={onSearch}
           style={{ width: "100%", padding: "20px" }}
         />
@@ -320,7 +325,7 @@ const UsersPage: React.FC = () => {
         />
       </Flex>
       <Modal
-        title="Confirm Action"
+        title="Подтвердить действие"
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -339,15 +344,15 @@ const UsersPage: React.FC = () => {
         )}
       </Modal>
       <Modal
-        title="Confirm role change"
+        title="Подтвердить смену роли"
         open={isConfirmModalOpen}
         onOk={handleConfirmOk}
         onCancel={handleConfirmCancel}
-        okText="Yes"
-        cancelText="No"
+        okText="Да"
+        cancelText="Нет"
       >
         <p>
-          Are you sure you want to assign the following roles to the user
+          Вы уверены, что хотите назначить пользователю следующие роли?
           <b>{modalData?.username}</b>?
         </p>
         <p>Роли: {selectedRoles.join(", ")}</p>

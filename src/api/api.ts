@@ -50,10 +50,12 @@ api.interceptors.response.use(
       if (error.response.status === 401) {
         const errorMessage = error.response.data || "";
         if (errorMessage.includes("expired")) {
-          console.warn(" Токен истёк, выполняем logout...");
+          console.warn(" Токен истёк, выполняем выход из системы...");
           tokens.removeTokens();
           store.dispatch(logout());
-          return Promise.reject(new Error("Сессия истекла, выполнен logout"));
+          return Promise.reject(
+            new Error("Сессия истекла, выполнен выход из системы")
+          );
         }
         if (isRefreshing) {
           return new Promise((resolve) => {
@@ -78,7 +80,7 @@ api.interceptors.response.use(
           tokens.removeTokens();
           store.dispatch(logout());
           return Promise.reject(
-            new Error("Не удалось обновить токен, выполнен logout")
+            new Error("Не удалось обновить токен, выполнен выход из системы")
           );
         } finally {
           isRefreshing = false;

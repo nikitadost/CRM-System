@@ -96,24 +96,30 @@ const UserEditPage: React.FC = () => {
           style={{ width: "50%", margin: "0 auto" }}
         >
           <Form.Item
-            label="Username"
+            label="Имя пользователя"
             name="username"
             rules={[
-              { required: true, message: "Please input your User Name!" },
+              {
+                required: true,
+                message: "Пожалуйста, введите Ваше имя пользователя!",
+              },
               {
                 pattern: /^[a-zA-Zа-яА-Я]{1,60}$/,
                 message:
-                  "Field must contain 1-60 Latin or Cyrillic alphabet characters.",
+                  "Поле должно содержать от 1 до 60 символов латинского или кириллического алфавита.",
               },
             ]}
           >
             <Input disabled={!isEditMode} value={user?.username} />
           </Form.Item>
           <Form.Item
-            label="Email"
+            label="Почта"
             name="email"
             rules={[
-              { required: true, message: "Please input your Email!" },
+              {
+                required: true,
+                message: "Пожалуйста, введите свой адрес электронной почты!",
+              },
               {
                 type: "email",
               },
@@ -122,14 +128,14 @@ const UserEditPage: React.FC = () => {
             <Input disabled={!isEditMode} value={user?.email} />
           </Form.Item>
           <Form.Item
-            label="Phone Number"
+            label="Номер телефона"
             name="phoneNumber"
             rules={[
               { required: false },
               {
                 pattern: /^\+\d{1,15}$/,
                 message:
-                  "Please enter a valid phone number format (+79123456789).",
+                  "Введите действительный формат номера телефона (+79123456789).",
               },
             ]}
           >

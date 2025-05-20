@@ -46,7 +46,7 @@ const UserProfilePage = React.memo(() => {
         <span>
           Телефон: <br /> {user?.phoneNumber}
         </span>
-        <Button onClick={handleLogout}>Logout</Button>
+        <Button onClick={handleLogout}>Выйти</Button>
       </Flex>
     </Layout>
   );

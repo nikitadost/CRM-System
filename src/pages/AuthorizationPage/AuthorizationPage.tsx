@@ -10,7 +10,7 @@ import { useDispatch } from "react-redux";
 
 const close = () => {
   console.log(
-    "Notification was closed. Either the close button was clicked or duration time elapsed."
+    "Уведомление было закрыто. Либо была нажата кнопка закрытия, либо истекло время действия."
   );
 };
 
@@ -42,11 +42,11 @@ const AuthorizationPage = React.memo(() => {
     };
     try {
       await loginUser(authorization);
-      openNotification("Successful Authorization");
+      openNotification("Успешная авторизация");
       dispatch(login());
     } catch (err) {
       console.log(err);
-      openNotification("Failed to Authorization");
+      openNotification("Не удалось авторизоваться");
     }
   };
 
@@ -78,9 +78,9 @@ const AuthorizationPage = React.memo(() => {
           vertical
           className="login-title-container"
         >
-          <h1 className="login-tittle">Login to your Account</h1>
+          <h1 className="login-tittle">Войдите в свою учетную запись</h1>
           <h2 className="login-subtittle">
-            See what is going on with your business
+            Посмотрите, что происходит с вашим бизнесом
           </h2>
         </Flex>
 
@@ -90,14 +90,15 @@ const AuthorizationPage = React.memo(() => {
           initialValues={{ remember: true }}
           onFinish={onFinish}
         >
-          <span className="login-input-text">Login</span>
+          <span className="login-input-text">Логин</span>
           <Form.Item
             name="login"
             rules={[
-              { required: true, message: "Please input your Login!" },
+              { required: true, message: "Пожалуйста, введите ваш логин!" },
               {
                 pattern: /^[a-zA-Z]{2,60}$/,
-                message: "Field must contain 2-60 Latin alphabet characters.",
+                message:
+                  "Поле должно содержать от 2 до 60 символов латинского алфавита.",
               },
             ]}
           >
@@ -107,19 +108,19 @@ const AuthorizationPage = React.memo(() => {
               autoComplete="username"
             />
           </Form.Item>
-          <span className="login-input-text">Password</span>
+          <span className="login-input-text">Пароль</span>
           <Form.Item
             name="password"
             rules={[
-              { required: true, message: "Please input your Password!" },
+              { required: true, message: "Введите пароль!" },
 
               {
                 min: 6,
-                message: "Password should be between 6 and 60 characters.",
+                message: "Пароль должен содержать от 6 до 60 символов.",
               },
               {
                 max: 60,
-                message: "Password should be between 6 and 60 characters.",
+                message: "Пароль должен содержать от 6 до 60 символов.",
               },
             ]}
           >
@@ -132,9 +133,9 @@ const AuthorizationPage = React.memo(() => {
 
           <Flex justify="space-between" align="center">
             <Checkbox type="rememder" className="registration-checkbox">
-              Remember Me
+              Запомнить меня
             </Checkbox>
-            <a href="">Forgot password?</a>
+            <a href="">Забыли пароль?</a>
           </Flex>
 
           <Form.Item>
@@ -144,14 +145,14 @@ const AuthorizationPage = React.memo(() => {
               type="primary"
               htmlType="submit"
             >
-              <span className="login-btn-text">Login</span>
+              <span className="login-btn-text">Войти</span>
             </Button>
           </Form.Item>
         </Form>
       </Flex>
       <span style={{ flex: "center" }}>
-        Not Registered Yet?
-        <Link to="/auth/registration">Create an account</Link>
+        Еще не зарегистрированы?
+        <Link to="/auth/registration">Создать аккаунт</Link>
       </span>
     </Flex>
   );

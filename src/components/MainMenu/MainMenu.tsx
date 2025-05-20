@@ -84,19 +84,19 @@ const MainMenu: React.FC = React.memo(() => {
     () => [
       {
         key: "todolist",
-        label: "TodoList",
+        label: "Список дел",
         icon: <UnorderedListOutlined />,
       },
       {
         key: "user-profile",
-        label: "User Profile",
+        label: "Профиль",
         icon: <ProfileOutlined />,
       },
       ...(isAdmin
         ? [
             {
               key: "users",
-              label: "Users",
+              label: "Пользователи",
               icon: <PieChartOutlined />,
             },
           ]

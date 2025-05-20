@@ -9,7 +9,7 @@ import { UserRegistration } from "../../types/types";
 
 const close = () => {
   console.log(
-    "Notification was closed. Either the close button was clicked or duration time elapsed."
+    "Уведомление было закрыто. Либо была нажата кнопка закрытия, либо истекло время действия."
   );
 };
 const RegistrationPage = React.memo(() => {
@@ -25,7 +25,7 @@ const RegistrationPage = React.memo(() => {
       type === "success" ? (
         <Space>
           <Link to="/authorization">
-            <Button>Go Auth</Button>
+            <Button>Перейти к авторизации</Button>
           </Link>
         </Space>
       ) : (
@@ -51,16 +51,16 @@ const RegistrationPage = React.memo(() => {
       };
       await registerUser(registration);
       openNotification(
-        "Successful Registration",
+        "Успешная регистрация",
         "success",
-        "You can now log in"
+        "Теперь вы можете войти"
       );
     } catch (error) {
       if (error instanceof AxiosError) {
         openNotification(
-          "Registration Failed",
+          "Регистрация не удалась",
           "error",
-          `Email or Login has already been used ${error?.response?.data}, ${error.message}`
+          `Электронная почта или логин уже были использованы ${error?.response?.data}, ${error.message}`
         );
       }
     }
@@ -95,9 +95,9 @@ const RegistrationPage = React.memo(() => {
           vertical
           className="registration-title-container"
         >
-          <h1 className="registration-tittle">Register your Account</h1>
+          <h1 className="registration-tittle">Зарегистрируйте свой аккаунт</h1>
           <h2 className="registration-subtittle">
-            Increase the efficiency of your business!
+            Повысьте эффективность вашего бизнеса!
           </h2>
         </Flex>
 
@@ -107,11 +107,14 @@ const RegistrationPage = React.memo(() => {
           initialValues={{ remember: true }}
           onFinish={onFinish}
         >
-          <span className="registration-input-text">Email</span>
+          <span className="registration-input-text">Почта</span>
           <Form.Item
             name="email"
             rules={[
-              { required: true, message: "Please input your Email!" },
+              {
+                required: true,
+                message: "Пожалуйста, введите свой адрес электронной почты!",
+              },
               {
                 type: "email",
               },
@@ -120,14 +123,15 @@ const RegistrationPage = React.memo(() => {
             <Input placeholder="abc@mail.ru" />
           </Form.Item>
 
-          <span className="registration-input-text">Login</span>
+          <span className="registration-input-text">Логин</span>
           <Form.Item
             name="login"
             rules={[
-              { required: true, message: "Please input your Login!" },
+              { required: true, message: "Пожалуйста, введите ваш логин!" },
               {
                 pattern: /^[a-zA-Z]{2,60}$/,
-                message: "Field must contain 2-60 Latin alphabet characters.",
+                message:
+                  "Поле должно содержать от 2 до 60 символов латинского алфавита.",
               },
             ]}
           >
@@ -138,19 +142,19 @@ const RegistrationPage = React.memo(() => {
             />
           </Form.Item>
 
-          <span className="login-input-text">Password</span>
+          <span className="login-input-text">Пароль</span>
           <Form.Item
             name="password"
             rules={[
-              { required: true, message: "Please input your Password!" },
+              { required: true, message: "Введите пароль!" },
 
               {
                 min: 6,
-                message: "Password should be between 6 and 60 characters.",
+                message: "Пароль должен содержать от 6 до 60 символов.",
               },
               {
                 max: 60,
-                message: "Password should be between 6 and 60 characters.",
+                message: "Пароль должен содержать от 6 до 60 символов.",
               },
             ]}
           >
@@ -160,20 +164,20 @@ const RegistrationPage = React.memo(() => {
               autoComplete="new-password"
             />
           </Form.Item>
-          <span className="login-input-text">Confirm Password</span>
+          <span className="login-input-text">Подтвердите пароль</span>
           <Form.Item
             name="confirmPassword"
             dependencies={["password"]}
             rules={[
-              { required: true, message: "Please input your Password!" },
+              { required: true, message: "Введите пароль!" },
 
               {
                 min: 6,
-                message: "Password should be between 6 and 60 characters.",
+                message: "Пароль должен содержать от 6 до 60 символов.",
               },
               {
                 max: 60,
-                message: "Password should be between 6 and 60 characters.",
+                message: "Пароль должен содержать от 6 до 60 символов.",
               },
 
               ({ getFieldValue }) => ({
@@ -184,7 +188,7 @@ const RegistrationPage = React.memo(() => {
                   ) {
                     return Promise.resolve();
                   } else {
-                    return Promise.reject(new Error("Passwords do not match!"));
+                    return Promise.reject(new Error("Пароли не совпадают!"));
                   }
                 },
               }),
@@ -196,7 +200,7 @@ const RegistrationPage = React.memo(() => {
               autoComplete="new-password"
             />
           </Form.Item>
-          <span className="registration-input-text">Phone Number</span>
+          <span className="registration-input-text">Номер телефона</span>
           <Form.Item
             name="phoneNumber"
             rules={[
@@ -204,25 +208,28 @@ const RegistrationPage = React.memo(() => {
               {
                 pattern: /^\+\d{1,15}$/,
                 message:
-                  "Please enter a valid phone number format (+79123456789).",
+                  "Введите действительный формат номера телефона (+79123456789).",
               },
             ]}
           >
             <Input type="phoneNumber" placeholder="+79123456789" />
           </Form.Item>
-          <span className="registration-input-text">Username</span>
+          <span className="registration-input-text">Имя пользователя</span>
           <Form.Item
             name="username"
             rules={[
-              { required: true, message: "Please input your User Name!" },
+              {
+                required: true,
+                message: "Пожалуйста, введите Ваше имя пользователя!",
+              },
               {
                 pattern: /^[a-zA-Zа-яА-Я]{1,60}$/,
                 message:
-                  "Field must contain 1-60 Latin or Cyrillic alphabet characters.",
+                  "Поле должно содержать от 1 до 60 символов латинского или кириллического алфавита.",
               },
             ]}
           >
-            <Input type="username" placeholder="Bogdan Rediron" />
+            <Input type="username" placeholder="Иван Иванов" />
           </Form.Item>
 
           <Form.Item>
@@ -232,11 +239,11 @@ const RegistrationPage = React.memo(() => {
               type="primary"
               htmlType="submit"
             >
-              <span className="registration-btn-text">Sign Up</span>
+              <span className="registration-btn-text">Зарегистрироваться</span>
             </Button>
             <span style={{ flex: "center" }}>
-              Already Registered?
-              <Link to="/auth/authorization">Login</Link>
+              Уже зарегистрированы?
+              <Link to="/auth/authorization">Войти</Link>
             </span>
           </Form.Item>
         </Form>
