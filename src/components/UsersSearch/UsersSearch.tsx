@@ -1,18 +1,28 @@
 import { Input } from "antd";
-import { GetProps } from "antd";
-import React from "react";
-
-type SearchProps = GetProps<typeof Input.Search>;
+import React, { useEffect, useRef, useState } from "react";
+import useDebouce from "../../hooks/useDebounce";
 
 interface UsersSearchProps {
-  onSearch: SearchProps["onSearch"];
+  onSearchChange: (debouncedSearch: string) => void;
 }
 
-const UsersSearch: React.FC<UsersSearchProps> = ({ onSearch }) => {
+const UsersSearch: React.FC<UsersSearchProps> = ({ onSearchChange }) => {
+  const [search, setSearch] = useState<string>("");
+
+  const debouncedSearch = useDebouce(search, 1000);
+  const isFirstRun = useRef(true);
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
+    onSearchChange(debouncedSearch);
+  }, [debouncedSearch, onSearchChange]);
+
   return (
-    <Input.Search
+    <Input
       placeholder="Введите текст для поиска"
-      onSearch={onSearch}
+      onChange={(e) => setSearch(e.target.value)}
       style={{ width: "100%", padding: "20px" }}
     />
   );

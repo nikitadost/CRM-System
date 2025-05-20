@@ -1,6 +1,6 @@
-import { Flex, GetProps, Input, Layout, TableProps } from "antd";
+import { Flex, Layout, TableProps } from "antd";
 import { ModalActionType, Roles, User, UserFilters } from "../../types/types";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   blockUser,
   getUsers,
@@ -12,8 +12,6 @@ import { SorterResult } from "antd/es/table/interface";
 import UserActionModal from "../../components/UserActionModal/UserActionModal";
 import UsersSearch from "../../components/UsersSearch/UsersSearch";
 import UsersTable from "../../components/UsersTable/UsersTable";
-
-type SearchProps = GetProps<typeof Input.Search>;
 
 const UsersPage: React.FC = () => {
   const [dataSource, setDataSource] = useState<User[]>([]);
@@ -27,7 +25,6 @@ const UsersPage: React.FC = () => {
     offset: page - 1,
     search: "",
   });
-  console.log(dataSource, page, total, filter);
 
   const [modalUser, setModalUser] = useState<User | null>(null);
   const [modalAction, setModalAction] = useState<ModalActionType | null>(null);
@@ -38,6 +35,16 @@ const UsersPage: React.FC = () => {
     setModalAction(action);
     setModalVisible(true);
   };
+
+  const onSearchChange = useCallback(
+    (search: string) => {
+      setFilter((prev) => ({
+        ...prev,
+        search,
+      }));
+    },
+    [setFilter]
+  );
 
   const handleActionModal = async (roles?: Roles[]) => {
     if (!modalUser || !modalAction) return;
@@ -60,14 +67,6 @@ const UsersPage: React.FC = () => {
     }
 
     await fetchUsers(filter);
-  };
-
-  const onSearch: SearchProps["onSearch"] = (value: string) => {
-    const newFilter: UserFilters = {
-      ...filter,
-      search: value,
-    };
-    setFilter(newFilter);
   };
 
   const fetchUsers = async (filters: UserFilters) => {
@@ -146,7 +145,7 @@ const UsersPage: React.FC = () => {
         vertical
         style={{ height: "100%", gap: "20px", fontSize: "20px" }}
       >
-        <UsersSearch onSearch={onSearch} />
+        <UsersSearch onSearchChange={onSearchChange} />
         <UsersTable
           dataSource={dataSource}
           loading={loading}
