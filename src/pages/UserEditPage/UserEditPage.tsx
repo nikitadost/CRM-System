@@ -8,6 +8,7 @@ import {
   phoneNumberRules,
   usernameRules,
 } from "../../utils/validationRules";
+import { getChangedFields } from "../../utils/getChangedFields";
 
 const UserEditPage: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
@@ -24,9 +25,9 @@ const UserEditPage: React.FC = () => {
         navigate("/users");
         return;
       }
+
       try {
         const data = await getUserProfile(Number(id));
-        console.log(data);
         setUser(data);
       } catch (error) {
         console.error("Ошибка при получении данных пользователя:", error);
@@ -34,42 +35,45 @@ const UserEditPage: React.FC = () => {
         setLoading(false);
       }
     };
+
     fetchUser();
   }, [id, navigate]);
 
   const handleSaveUser = async () => {
-    if (user) {
-      try {
-        const validatedField = await form.validateFields();
-        const fieldsToCompare: (keyof User)[] = [
-          "username",
-          "email",
-          "phoneNumber",
-        ];
-        const changedValues = fieldsToCompare.reduce((acc, key) => {
-          if (validatedField[key] !== user[key]) {
-            acc[key] = validatedField[key];
-          }
-          return acc;
-        }, {} as Partial<User>);
-        if (Object.keys(changedValues).length > 0) {
-          const res = await updateUserProfile(user.id, changedValues);
-          if (res) {
-            setUser(res);
-          } else {
-            await form.setFieldsValue({
-              username: user?.username,
-              phoneNumber: user?.phoneNumber,
-              email: user?.email,
-            });
-          }
-        }
-        setIsEditMode(false);
-      } catch (error) {
-        console.error("Ошибка при обновлении данных пользователя:", error);
+    if (!user) return;
 
-        throw error;
+    try {
+      const validatedFields = await form.validateFields();
+
+      const fieldsToCompare: (keyof User)[] = [
+        "username",
+        "email",
+        "phoneNumber",
+      ];
+
+      const changedValues = getChangedFields(
+        user,
+        validatedFields,
+        fieldsToCompare
+      );
+
+      if (Object.keys(changedValues).length > 0) {
+        const res = await updateUserProfile(user.id, changedValues);
+
+        if (res) {
+          setUser(res);
+        } else {
+          await form.setFieldsValue({
+            username: user.username,
+            phoneNumber: user.phoneNumber,
+            email: user.email,
+          });
+        }
       }
+
+      setIsEditMode(false);
+    } catch (error) {
+      console.error("Ошибка при обновлении данных пользователя:", error);
     }
   };
 
@@ -83,6 +87,7 @@ const UserEditPage: React.FC = () => {
       phoneNumber: user?.phoneNumber,
       email: user?.email,
     });
+
     setIsEditMode(false);
   };
 
