@@ -1,5 +1,5 @@
-import { Button, Flex, Layout } from "antd";
-import React, { useEffect } from "react";
+import { Button } from "antd";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { logout } from "../../redux/AuthSlice";
@@ -7,6 +7,7 @@ import { getUserProfile, logoutUser } from "../../api/AuthApi";
 import { User } from "../../types/types";
 import { clearUser, setUser } from "../../redux/UserSlice";
 import { RootState } from "../../redux/store";
+import "./UserProfilePage.css";
 
 const UserProfilePage = () => {
   const user = useSelector((state: RootState) => state.user.userData);
@@ -29,26 +30,22 @@ const UserProfilePage = () => {
   }, [dispatch]);
 
   return (
-    <Layout>
-      <Flex
-        align="center"
-        justify="center"
-        vertical
-        style={{ height: "100%", gap: "20px", fontSize: "20px" }}
-      >
-        <span>
-          Имя пользователя: <br /> {user?.username}
-        </span>
-        <span>
-          Почтовый адрес: <br />
-          {user?.email}
-        </span>
-        <span>
-          Телефон: <br /> {user?.phoneNumber}
-        </span>
-        <Button onClick={handleLogout}>Выйти</Button>
-      </Flex>
-    </Layout>
+    <div className="user-profile-wrapper">
+      <div className="user-profile-content">
+        <p>
+          <strong>Имя пользователя:</strong> <br /> {user?.username}
+        </p>
+        <p>
+          <strong>Почтовый адрес:</strong> <br /> {user?.email}
+        </p>
+        <p>
+          <strong>Телефон:</strong> <br /> {user?.phoneNumber || "\u00A0"}
+        </p>
+        <Button className="logout-button" type="primary" onClick={handleLogout}>
+          Выйти
+        </Button>
+      </div>
+    </div>
   );
 };
 

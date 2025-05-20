@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, Button, Space } from "antd";
+import { Table, Space } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
 import {
   LockOutlined,
@@ -12,6 +12,8 @@ import { useNavigate } from "react-router";
 import { User, ModalActionType, Roles } from "../../types/types";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { format } from "date-fns";
+import IconButton from "../IconButton/IconButton";
 
 interface UsersTableProps {
   dataSource: User[];
@@ -48,11 +50,7 @@ const UsersTable: React.FC<UsersTableProps> = ({
       dataIndex: "date",
       render: (date: string) => {
         const dateObj = new Date(date);
-        return `${dateObj.getDate().toString().padStart(2, "0")}.${(
-          dateObj.getMonth() + 1
-        )
-          .toString()
-          .padStart(2, "0")}.${dateObj.getFullYear()}`;
+        return format(dateObj, "dd.MM.yyyy");
       },
     },
     {
@@ -79,32 +77,37 @@ const UsersTable: React.FC<UsersTableProps> = ({
       key: "actions",
       render: (record: User) => (
         <Space>
-          <Button
+          <IconButton
             onClick={() => navigate(`/users/${record.id}`)}
             type="default"
-          >
-            <EditFilled />
-          </Button>
+            icon={<EditFilled />}
+          />
 
           {isAdmin && (
-            <Button danger onClick={() => onAction(record, "delete")}>
-              <DeleteFilled />
-            </Button>
+            <IconButton
+              onClick={() => onAction(record, "delete")}
+              danger
+              icon={<DeleteFilled />}
+            />
           )}
 
           {record.isBlocked ? (
-            <Button onClick={() => onAction(record, "unblock")}>
-              <UnlockOutlined style={{ color: "green" }} />
-            </Button>
+            <IconButton
+              onClick={() => onAction(record, "unblock")}
+              icon={<UnlockOutlined style={{ color: "green" }} />}
+            />
           ) : (
-            <Button danger onClick={() => onAction(record, "block")}>
-              <LockOutlined style={{ color: "red" }} />
-            </Button>
+            <IconButton
+              onClick={() => onAction(record, "block")}
+              danger
+              icon={<LockOutlined style={{ color: "red" }} />}
+            />
           )}
           {isAdmin && (
-            <Button onClick={() => onAction(record, "rights")}>
-              <UserAddOutlined style={{ color: "green" }} />
-            </Button>
+            <IconButton
+              onClick={() => onAction(record, "rights")}
+              icon={<UserAddOutlined style={{ color: "green" }} />}
+            />
           )}
         </Space>
       ),

@@ -1,4 +1,3 @@
-import React from "react";
 import logo from "../../../public/images/auth/logo.svg";
 import { Button, Checkbox, Form, Input, Flex, notification, Space } from "antd";
 import "./AuthorizationPage.css";

@@ -22,7 +22,7 @@ const MainLayout = () => {
   }, [dispatch]);
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <Layout style={{ minHeight: "100vh", display: "flex" }}>
       <MainMenu />
 
       <Outlet />

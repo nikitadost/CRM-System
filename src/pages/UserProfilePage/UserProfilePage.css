@@ -1,0 +1,25 @@
+.user-profile-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.user-profile-content {
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  font-size: 20px;
+  background: #fafafa;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.logout-button {
+  margin-top: 20px;
+  width: 150px;
+  font-size: 18px;
+}
