@@ -115,17 +115,17 @@ const UserEditPage: React.FC = () => {
             name="username"
             rules={usernameRules}
           >
-            <Input disabled={!isEditMode} value={user?.username} />
+            <Input disabled={!isEditMode} />
           </Form.Item>
           <Form.Item label="Почта" name="email" rules={emailRules}>
-            <Input disabled={!isEditMode} value={user?.email} />
+            <Input disabled={!isEditMode} />
           </Form.Item>
           <Form.Item
             label="Номер телефона"
             name="phoneNumber"
             rules={phoneNumberRules}
           >
-            <Input disabled={!isEditMode} value={user?.phoneNumber} />
+            <Input disabled={!isEditMode} />
           </Form.Item>
         </Form>
         <Flex>
