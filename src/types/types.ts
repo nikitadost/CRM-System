@@ -86,3 +86,4 @@ export interface Token {
   accessToken: string;
   refreshToken: string;
 }
+export type ModalActionType = "delete" | "block" | "unblock" | "rights";

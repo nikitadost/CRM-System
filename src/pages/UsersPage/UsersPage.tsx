@@ -1,17 +1,5 @@
-import {
-  Button,
-  Checkbox,
-  Flex,
-  GetProps,
-  Input,
-  Layout,
-  Modal,
-  Space,
-  Table,
-  TableColumnsType,
-  TableProps,
-} from "antd";
-import { Roles, User, UserFilters } from "../../types/types";
+import { Flex, GetProps, Input, Layout, TableProps } from "antd";
+import { ModalActionType, Roles, User, UserFilters } from "../../types/types";
 import { useEffect, useState } from "react";
 import {
   blockUser,
@@ -20,20 +8,14 @@ import {
   unblockUser,
   updateUserRoles,
 } from "../../api/UsersApi";
-import {
-  LockOutlined,
-  EditFilled,
-  DeleteFilled,
-  UserAddOutlined,
-  UnlockOutlined,
-} from "@ant-design/icons";
 import { SorterResult } from "antd/es/table/interface";
-import { useNavigate } from "react-router";
-import Search from "antd/es/input/Search";
+import UserActionModal from "../../components/UserActionModal/UserActionModal";
+import UsersSearch from "../../components/UsersSearch/UsersSearch";
+import UsersTable from "../../components/UsersTable/UsersTable";
+
 type SearchProps = GetProps<typeof Input.Search>;
-type ActionType = "delete" | "block" | "unblock" | "rights";
+
 const UsersPage: React.FC = () => {
-  const navigate = useNavigate();
   const [dataSource, setDataSource] = useState<User[]>([]);
   const [page, setPage] = useState<number>(1);
   const [total, setTotal] = useState<number>(0);
@@ -45,72 +27,41 @@ const UsersPage: React.FC = () => {
     offset: page - 1,
     search: "",
   });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [modalFunction, setModalFunction] = useState<() => Promise<void>>();
-  const [modalData, setModalData] = useState<User>();
-  const [actionType, setActionType] = useState<ActionType>("delete");
-  const [selectedRoles, setSelectedRoles] = useState<Roles[]>([]);
-  const showModal = (
-    user: User,
-    actionFunction: () => Promise<void>,
-    type: ActionType
-  ) => {
-    console.log(user, actionFunction, type);
-    setModalFunction(() => actionFunction);
-    setActionType(type);
-    setModalData(user);
-    setIsModalOpen(true);
+  console.log(dataSource, page, total, filter);
+
+  const [modalUser, setModalUser] = useState<User | null>(null);
+  const [modalAction, setModalAction] = useState<ModalActionType | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const showModal = (user: User, action: ModalActionType) => {
+    setModalUser(user);
+    setModalAction(action);
+    setModalVisible(true);
   };
 
-  const handleOk = async () => {
-    try {
-      if (actionType === "rights" && modalData) {
-        setIsConfirmModalOpen(true);
-      } else if (modalFunction) {
-        await modalFunction();
-      }
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Ошибка при выполнении действия:", error);
-    }
-  };
+  const handleActionModal = async (roles?: Roles[]) => {
+    if (!modalUser || !modalAction) return;
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleConfirmOk = async () => {
-    if (modalData) {
-      try {
-        await updateUserRoles(modalData.id, selectedRoles);
-        await fetchUsers(filter);
-        setIsConfirmModalOpen(false);
-        setIsModalOpen(false);
-      } catch (error) {
-        console.error("Ошибка при обновлении ролей:", error);
-      }
-    }
-  };
-
-  const handleConfirmCancel = () => {
-    setIsConfirmModalOpen(false);
-  };
-
-  const getModalText = (action: ActionType) => {
-    switch (action) {
-      case "delete":
-        return `Вы уверены, что хотите удалить пользователя: ${modalData?.username}?`;
-      case "block":
-        return `Вы уверены, что хотите заблокировать пользователя: ${modalData?.username}?`;
-      case "unblock":
-        return `Вы уверены, что хотите разблокировать пользователя: ${modalData?.username}?`;
+    switch (modalAction) {
       case "rights":
-        return `Выберите права пользователю: ${modalData?.username}`;
-      default:
-        return "";
+        if (roles) {
+          await updateUserRoles(modalUser.id, roles);
+        }
+        break;
+      case "delete":
+        await removeUser(modalUser.id);
+        break;
+      case "block":
+        await blockUser(modalUser.id);
+        break;
+      case "unblock":
+        await unblockUser(modalUser.id);
+        break;
     }
+
+    await fetchUsers(filter);
   };
+
   const onSearch: SearchProps["onSearch"] = (value: string) => {
     const newFilter: UserFilters = {
       ...filter,
@@ -133,23 +84,9 @@ const UsersPage: React.FC = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchUsers(filter);
   }, [filter]);
-
-  const handleRemoveUser = async (id: number) => {
-    await removeUser(id);
-    fetchUsers(filter);
-  };
-  const handleBlockUser = async (id: number) => {
-    await blockUser(id);
-    fetchUsers(filter);
-  };
-  const handleUnblockUser = async (id: number) => {
-    await unblockUser(id);
-    fetchUsers(filter);
-  };
 
   const handleTableChange: TableProps<User>["onChange"] = (
     pagination,
@@ -201,103 +138,6 @@ const UsersPage: React.FC = () => {
     setFilter(newFilter);
   };
 
-  const columns: TableColumnsType<User> = [
-    {
-      key: "username",
-      title: "Имя пользователя",
-      dataIndex: "username",
-      sorter: true,
-    },
-    { key: "email", title: "Почта", dataIndex: "email", sorter: true },
-    {
-      key: "date",
-      title: "Дата регистрации",
-      dataIndex: "date",
-      render: (date: string) => {
-        const dateObj = new Date(date);
-        return `${dateObj.getDate().toString().padStart(2, "0")}.${(
-          dateObj.getMonth() + 1
-        )
-          .toString()
-          .padStart(2, "0")}.${dateObj.getFullYear()}`;
-      },
-    },
-    {
-      key: "isBlocked",
-      title: "Заблокирован",
-      dataIndex: "isBlocked",
-      filterMultiple: false,
-      filters: [
-        { text: "All users", value: "all" },
-        { text: "Blocked users", value: "blocked" },
-        { text: "Active users", value: "active" },
-      ],
-      render: (isBlocked: boolean) => {
-        return <p>{isBlocked ? "Да" : "Нет"}</p>;
-      },
-    },
-    {
-      key: "roles",
-      title: "Роли",
-      dataIndex: "roles",
-      render: (roles: string[]) => roles?.join(", "),
-    },
-    { key: "phoneNumber", title: "Номер телефона", dataIndex: "phoneNumber" },
-    {
-      title: "",
-      key: "actions",
-      render: (record) => (
-        <Space>
-          <Button
-            color="primary"
-            variant="outlined"
-            onClick={() => navigate(`/users/${record.id}`)}
-          >
-            <EditFilled />
-          </Button>
-          <Button
-            color="danger"
-            variant="solid"
-            onClick={() =>
-              showModal(record, () => handleRemoveUser(record.id), "delete")
-            }
-          >
-            <DeleteFilled />
-          </Button>
-          {record.isBlocked ? (
-            <Button
-              onClick={() =>
-                showModal(record, () => handleUnblockUser(record.id), "unblock")
-              }
-            >
-              <UnlockOutlined style={{ color: "green" }} />
-            </Button>
-          ) : (
-            <Button
-              color="danger"
-              onClick={() =>
-                showModal(record, () => handleBlockUser(record.id), "block")
-              }
-            >
-              <LockOutlined style={{ color: "red" }} />
-            </Button>
-          )}
-          <Button
-            onClick={() => {
-              setSelectedRoles(record.roles);
-              setModalData(record);
-              setActionType("rights");
-              setIsModalOpen(true);
-              setModalFunction(undefined);
-            }}
-          >
-            <UserAddOutlined style={{ color: "green" }} />
-          </Button>
-        </Space>
-      ),
-    },
-  ];
-
   return (
     <Layout>
       <Flex
@@ -306,57 +146,27 @@ const UsersPage: React.FC = () => {
         vertical
         style={{ height: "100%", gap: "20px", fontSize: "20px" }}
       >
-        <Search
-          placeholder="Введите текст для поиска"
-          onSearch={onSearch}
-          style={{ width: "100%", padding: "20px" }}
-        />
-        <Table
-          columns={columns}
+        <UsersSearch onSearch={onSearch} />
+        <UsersTable
           dataSource={dataSource}
           loading={loading}
+          page={page}
+          total={total}
           onChange={handleTableChange}
-          rowKey="id"
-          pagination={{
-            total: total,
-            pageSize: 20,
-            current: page,
-          }}
+          onAction={showModal}
         />
       </Flex>
-      <Modal
-        title="Подтвердить действие"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <p>{getModalText(actionType)}</p>
-        {actionType === "rights" ? (
-          <Checkbox.Group
-            options={[Roles.USER, Roles.MODERATOR, Roles.ADMIN]}
-            value={selectedRoles}
-            onChange={(checkedValues) =>
-              setSelectedRoles(checkedValues as Roles[])
-            }
-          />
-        ) : (
-          ""
-        )}
-      </Modal>
-      <Modal
-        title="Подтвердить смену роли"
-        open={isConfirmModalOpen}
-        onOk={handleConfirmOk}
-        onCancel={handleConfirmCancel}
-        okText="Да"
-        cancelText="Нет"
-      >
-        <p>
-          Вы уверены, что хотите назначить пользователю следующие роли?
-          <b>{modalData?.username}</b>?
-        </p>
-        <p>Роли: {selectedRoles.join(", ")}</p>
-      </Modal>
+      <UserActionModal
+        open={modalVisible}
+        onClose={() => {
+          setModalVisible(false);
+          setModalUser(null);
+          setModalAction(null);
+        }}
+        user={modalUser}
+        action={modalAction as ModalActionType}
+        onConfirm={handleActionModal}
+      />
     </Layout>
   );
 };
