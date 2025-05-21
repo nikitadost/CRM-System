@@ -1,15 +1,14 @@
 import api from "./api";
-import { TodoStatus } from "../types/types";
+import { Todo, TodoStatus } from "../types/types";
 
 export const postTodo = async (todo: string) => {
   try {
-    await api.post("/todos", {
+    await api.post<Todo>("/todos", {
       title: todo,
       isDone: false,
     });
-    console.log("postTodo");
   } catch (err) {
-    console.error("Failed to add todo:", err);
+    console.error("Ошибка добавления задачи:", err);
     throw err;
   }
 };
@@ -19,11 +18,10 @@ export const fetchTodos = async (status: TodoStatus) => {
     const response = await api.get("/todos", {
       params: { filter: status },
     });
-    console.log("fetch filtered by status Todos");
     return response.data;
   } catch (err) {
     {
-      console.error("Failed to fetch todos:", err);
+      console.error("Ошибка загрузки задач:", err);
       throw err;
     }
   }
@@ -31,32 +29,29 @@ export const fetchTodos = async (status: TodoStatus) => {
 
 export const editTodo = async (id: number, newTitle: string) => {
   try {
-    await api.put(`/todos/${id}`, { title: newTitle });
-    console.log("editTodo");
+    await api.put<Todo>(`/todos/${id}`, { title: newTitle });
   } catch (err) {
-    console.error("Failed to edit todo :", err);
+    console.error("Ошибка редактирования задачи:", err);
     throw err;
   }
 };
 
 export const updateTodoStatus = async (updatedIsDone: boolean, id: number) => {
   try {
-    await api.put(`/todos/${id}`, {
+    await api.put<Todo>(`/todos/${id}`, {
       isDone: updatedIsDone,
     });
-    console.log("updateTodoStatus");
   } catch (err) {
-    console.error("Failed to update todo status:", err);
+    console.error("Ошибка обновления статуса задачи:", err);
     throw err;
   }
 };
 
 export const deleteTodo = async (id: number) => {
   try {
-    await api.delete(`/todos/${id}`);
-    console.log("deleteTodo");
+    await api.delete<Todo>(`/todos/${id}`);
   } catch (err) {
-    console.error("Failed to delete todo:", err);
+    console.error("Ошибка удаления задачи:", err);
     throw err;
   }
 };

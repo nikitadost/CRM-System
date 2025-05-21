@@ -7,8 +7,9 @@ import {
   CloseCircleFilled,
 } from "@ant-design/icons";
 import { deleteTodo, editTodo, updateTodoStatus } from "../../api/TodoApi";
-import { Button, Checkbox, Flex, Form, Input } from "antd";
+import { Checkbox, Flex, Form, Input } from "antd";
 import type { CheckboxChangeEvent } from "antd";
+import IconButton from "../IconButton/IconButton";
 
 interface TodoItemProps {
   handleFetch: () => void;
@@ -109,28 +110,32 @@ const TodoItem: React.FC<TodoItemProps> = React.memo(
         </Form>
         {isEditMode ? (
           <>
-            <Button
+            <IconButton
               color="primary"
               variant="outlined"
               onClick={handleSaveTitle}
-            >
-              <SaveFilled />
-            </Button>
-            <Button
+              icon={<SaveFilled />}
+            />
+            <IconButton
               style={{ backgroundColor: "#ffffff" }}
               onClick={handleCancelEdit}
-            >
-              <CloseCircleFilled />
-            </Button>
+              icon={<CloseCircleFilled />}
+            />
           </>
         ) : (
-          <Button color="primary" variant="outlined" onClick={handleEditTitle}>
-            <EditFilled />
-          </Button>
+          <IconButton
+            color="primary"
+            variant="outlined"
+            onClick={handleEditTitle}
+            icon={<EditFilled />}
+          />
         )}
-        <Button color="danger" variant="solid" onClick={handleDelete}>
-          <DeleteFilled />
-        </Button>
+        <IconButton
+          color="danger"
+          variant="solid"
+          onClick={handleDelete}
+          icon={<DeleteFilled />}
+        />
       </Flex>
     );
   }

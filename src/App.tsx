@@ -1,32 +1,54 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router";   
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { login, logout, setLoading } from "./redux/AuthSlice";
+import AuthTokens from "./api/AuthTokens";
+import { refreshToken } from "./api/AuthApi";
+import { clearUser } from "./redux/UserSlice";
+import AppRouter from "./router/AppRouter";
 
-import TodoListPage from "./pages/TodoListPage/TodoListPage";
-import UserProfilePage from "./pages/UserProfilePage/UserProfilePage";
-import AuthorizationPage from "./pages/AuthorizationPage/AuthorizationPage";
-import RegistrationPage from "./pages/RegistrationPage/RegistrationPage";
+const App: React.FC = () => {
+  const tokens = AuthTokens.getInstance();
+  const dispatch = useDispatch();
 
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./api/query-client";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+  useEffect(() => {
+    const updateRefreshToken = async () => {
+      dispatch(setLoading(true));
+      try {
+        await refreshToken(tokens.getRefreshToken());
+        if (tokens.getAccessToken()) {
+          dispatch(login());
+        } else {
+          tokens.removeTokens();
+          dispatch(logout());
+        }
+      } catch (error) {
+        console.error("Ошибка обновления токена:", error);
+        tokens.removeTokens();
+        dispatch(logout());
+      } finally {
+        dispatch(setLoading(false));
+      }
+    };
 
-const App: React.FC = React.memo(() => {
-  
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Routes>
-      <Route path="authorization" element={<AuthorizationPage />} />
-      <Route path="registration" element={<RegistrationPage />} />
-      <Route path="todolist" element={<TodoListPage />} />
-      <Route path="user-profile" element={<UserProfilePage />} />
+    if (!tokens.getAccessToken()) {
+      updateRefreshToken();
+    } else {
+      dispatch(setLoading(false));
+    }
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "refreshToken" && !event.newValue) {
+        tokens.removeTokens();
+        dispatch(logout());
+        dispatch(clearUser());
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [dispatch, tokens]);
 
-      <Route path="*" element={<Navigate to="/todolist" replace />} />
-      <Route path="/" element={<Navigate to="/todolist" replace />} />
-      </Routes>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-);
-});
+  return <AppRouter />;
+};
 
 export default App;
- 
